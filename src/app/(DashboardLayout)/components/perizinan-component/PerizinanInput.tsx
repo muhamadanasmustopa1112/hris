@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import {
   TextField, Button, Select, MenuItem, InputLabel, FormControl, Box, Grid, CircularProgress,
-  Typography
+  Typography,
+  Snackbar,
+  SnackbarCloseReason,
+  Alert
 } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 
 interface JenisIzin {
@@ -20,7 +25,7 @@ interface Category {
 interface Employee {
     id: number;
     name: string;
-  }
+}
 
 const PerizinanInput: React.FC = () => {
 
@@ -31,12 +36,16 @@ const PerizinanInput: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-
+  
+  const [open, setOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
+  const router = useRouter();
 
   const [formData, setFormData] = useState<{ [key: string]: any }>({
-    jenis_perizinan_id: '',
+    jenis_izin_id: '',
     category_id: '',
-    companies_user_id: '',
+    companies_users_id: '',
     tanggal_mulai: '',
     tanggal_selesai: '',
     jam_masuk: '',
@@ -69,7 +78,11 @@ const PerizinanInput: React.FC = () => {
 
   const fetchJenisIzin = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/jenis-izin');
+      const response = await axios.get('http://127.0.0.1:8000/api/jenis-izin', {
+        headers:{
+          'Authorization': `Bearer ${Cookies.get('token')}`,
+        }
+      });
       if (Array.isArray(response.data.data)) {
         setJenisIzins(response.data.data);
       } else {
@@ -82,7 +95,11 @@ const PerizinanInput: React.FC = () => {
 
   const fetchCategory = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/category-izin');
+      const response = await axios.get('http://127.0.0.1:8000/api/category-izin', {
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('token')}`,
+        }
+      });
       if (Array.isArray(response.data.data)) {
           setCategory(response.data.data);
       } else {
@@ -124,6 +141,11 @@ const PerizinanInput: React.FC = () => {
     setUploadedFileName(null);
     setProgress(0);
 
+    setFormData((prev) => ({
+      ...prev,
+      lampiran: file, 
+    }));
+
     
     const totalDuration = 5000; 
     const interval = 100; 
@@ -149,10 +171,60 @@ const PerizinanInput: React.FC = () => {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+
     e.preventDefault();
-    // Process form data here (e.g., send to API)
-    console.log(formData);
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/perizinan', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${Cookies.get('token')}`,
+        },
+      });
+
+      setAlertMessage('Pengajuan Izin/Cuti berhasil dibuat!');
+      setAlertSeverity('success');
+      setOpen(true);
+
+    } catch (error) {
+
+      if (axios.isAxiosError(error)) {
+
+        const errorMessages = error.response?.data?.errors;
+
+        if (errorMessages) {
+          const message = Object.values(errorMessages).flat().join(', ') || 'Terjadi kesalahan';
+          console.error('Validation errors:', message);
+          setAlertMessage(message);
+          
+        } else {
+          console.error('Error response without validation errors:', error.response?.data);
+          setAlertMessage('Terjadi kesalahan');
+        }
+
+        setAlertSeverity('error');
+        setOpen(true);
+
+      } else {
+        console.error('Error creating perizinan:', error);
+      }
+
+    }
+  };
+
+  const handleSnackbarClose = (
+    event: SyntheticEvent | Event,
+    reason: SnackbarCloseReason
+  ) => {
+    if (reason === 'clickaway') {
+      return; 
+    }
+    setOpen(false); 
+  };
+
+  const handleAlertClose = (event: SyntheticEvent) => {
+    setOpen(false); 
+    router.push('/perizinan/data-perizinan');    
   };
 
   return (
@@ -162,8 +234,8 @@ const PerizinanInput: React.FC = () => {
             <FormControl variant="outlined" fullWidth required>
                 <InputLabel>Jenis Izin</InputLabel>
                 <Select
-                    name="jenis_perizinan_id"
-                    value={formData.jenis_perizinan_id}
+                    name="jenis_izin_id"
+                    value={formData.jenis_izin_id}
                     onChange={handleSelectChange}
                     label="Jenis Izin"
                 >
@@ -198,8 +270,8 @@ const PerizinanInput: React.FC = () => {
       <FormControl variant="outlined" fullWidth required>
         <InputLabel>Employee</InputLabel>
         <Select
-            name="companies_user_id"
-            value={formData.companies_user_id}
+            name="companies_users_id"
+            value={formData.companies_users_id}
             onChange={handleSelectChange}
             label="Employee"
         >
@@ -319,8 +391,28 @@ const PerizinanInput: React.FC = () => {
       <Button variant="contained" color="primary" type="submit">
         Submit
       </Button>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} 
+      >
+        <Alert 
+          onClose={handleAlertClose} 
+          severity={alertSeverity} 
+          sx={{ 
+            width: '100%', 
+            backgroundColor: alertSeverity === 'success' ? 'green' : 'red',
+            color: 'white' 
+          }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
 
 export default PerizinanInput;
+
+

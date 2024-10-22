@@ -1,12 +1,14 @@
 import {
-  IconAperture,
-  IconCopy,
+  IconAlarm,
+  IconBriefcase,
+  IconBriefcase2,
+  IconCalendarTime,
   IconFileCheck,
+  IconFileDelta,
   IconFileDescription,
+  IconFileDiff,
   IconLayoutDashboard,
-  IconLogin,
-  IconMoodHappy,
-  IconUserPlus,
+  IconTimeDuration60,
   IconUsers,
 } from "@tabler/icons-react";
 
@@ -26,6 +28,34 @@ const Menuitems = [
   },
   {
     navlabel: true,
+    subheader: "Master Data",
+  },
+  {
+    id: uniqueId(),
+    title: "Shift",
+    icon: IconCalendarTime,
+    href: "/shift",
+  },
+  {
+    id: uniqueId(),
+    title: "Jam",
+    icon: IconAlarm,
+    href: "/jam",
+  },
+  {
+    id: uniqueId(),
+    title: "Divisi",
+    icon: IconBriefcase2,
+    href: "/divisions",
+  },
+  {
+    id: uniqueId(),
+    title: "Jabatan",
+    icon: IconBriefcase,
+    href: "/jabatan",
+  },
+  {
+    navlabel: true,
     subheader: "Karyawan",
   },
   {
@@ -36,36 +66,33 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Abseni Karyawan",
+    title: "Presensi Karyawan",
     icon: IconFileCheck,
-    href: "/utilities/shadow",
+    href: "/presensi",
   },
   {
     navlabel: true,
-    subheader: "Perizinan",
+    subheader: "Pengajuan Karyawan",
   },
   {
     id: uniqueId(),
-    title: "Data Perizinan",
+    title: "Pengajuan Cuti/Izin",
     icon: IconFileDescription,
     href: "/perizinan/data-perizinan",
   },
   {
-    navlabel: true,
-    subheader: "Extra",
+    id: uniqueId(),
+    title: "Pengajuan Lembur",
+    icon: IconFileDelta,
+    href: "/lembur",
   },
   {
     id: uniqueId(),
-    title: "Icons",
-    icon: IconMoodHappy,
-    href: "/icons",
+    title: "Pengajuan Kasbon",
+    icon: IconFileDiff,
+    href: "/kasbon",
   },
-  {
-    id: uniqueId(),
-    title: "Sample Page",
-    icon: IconAperture,
-    href: "/sample-page",
-  },
+
 ];
 
 export default Menuitems;

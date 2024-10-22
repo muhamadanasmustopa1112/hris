@@ -1,4 +1,4 @@
-import { useMediaQuery, Box, Drawer } from "@mui/material";
+import { useMediaQuery, Box, Drawer, Typography } from "@mui/material";
 import SidebarItems from "./SidebarItems";
 import { Upgrade } from "./Updrade";
 import { Sidebar, Logo } from 'react-mui-sidebar';
@@ -72,13 +72,15 @@ const MSidebar = ({
               {/* ------------------------------------------- */}
               {/* Logo */}
               {/* ------------------------------------------- */}
-              <Logo img="/images/logos/dark-logo.svg" />
+              <Box sx={{ width: 200, height: '110px', marginTop: '-40px', justifyContent: 'center', }}>
+                <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%'}} />
+              </Box>
               <Box>
                 {/* ------------------------------------------- */}
                 {/* Sidebar Items */}
                 {/* ------------------------------------------- */}
                 <SidebarItems />
-                <Upgrade />
+                {/* <Upgrade /> */}
               </Box>
             </Sidebar >
           </Box>
@@ -117,12 +119,12 @@ const MSidebar = ({
           {/* ------------------------------------------- */}
           {/* Logo */}
           {/* ------------------------------------------- */}
-          <Logo img="/images/logos/dark-logo.svg" />
+          {/* <Logo img="/images/logos/dark-logo.svg" /> */}
           {/* ------------------------------------------- */}
           {/* Sidebar Items */}
           {/* ------------------------------------------- */}
           <SidebarItems />
-          <Upgrade />
+          {/* <Upgrade /> */}
         </Sidebar>
       </Box>
       {/* ------------------------------------------- */}

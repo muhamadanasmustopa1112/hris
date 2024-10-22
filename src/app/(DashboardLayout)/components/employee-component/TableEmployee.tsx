@@ -14,12 +14,14 @@ import {
   SnackbarCloseReason,
   Snackbar,
   Alert,
+  Backdrop,
 } from '@mui/material';
 import { SyntheticEvent, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 interface Employee {
   id: number;
@@ -60,6 +62,7 @@ const TableEmployee: React.FC<TableEmployeeProps> = ({
   const [open, setOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
+  const [loadingBackDrop, setLoadingBackDrop] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const theme = useTheme();
@@ -77,6 +80,7 @@ const TableEmployee: React.FC<TableEmployeeProps> = ({
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get('token')}`,
           },
         });
   
@@ -101,9 +105,17 @@ const TableEmployee: React.FC<TableEmployeeProps> = ({
   };
 
   const handleEdit = (id: number) => {
-   
-    router.push(`/employees/edit-employee/${id}`);
-    console.log(`Editing employee with ID: ${id}`);
+    setLoadingBackDrop(true);
+    setTimeout(() => {
+      router.push(`/employees/edit-employee/${id}`);
+    }, 2000);
+  };
+
+  const handleAddKaryawan = () => {
+    setLoadingBackDrop(true);
+    setTimeout(() => {
+      router.push('/employees/input-employee')    
+    }, 2000);
   };
 
   const handleSnackbarClose = (
@@ -118,7 +130,7 @@ const TableEmployee: React.FC<TableEmployeeProps> = ({
 
   const handleAlertClose = (event: SyntheticEvent) => {
     setOpen(false); 
-    router.refresh();
+    location.reload();
 
   };
 
@@ -142,9 +154,12 @@ const TableEmployee: React.FC<TableEmployeeProps> = ({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <Button variant="contained" color="primary" onClick={() => {router.push('/employees/input-employee')}}>
+        <Button variant="contained" color="primary" onClick={handleAddKaryawan}>
           Add New Karyawan
         </Button>
+        <Backdrop open={loadingBackDrop} style={{ zIndex: 9999, color: '#fff' }}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </div>
       <Paper>
         <TableContainer>
@@ -162,27 +177,35 @@ const TableEmployee: React.FC<TableEmployeeProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {paginatedEmployees.map((employee, index) => (
-                <TableRow key={employee.nik}>
-                  <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                  <TableCell>{employee.nik}</TableCell>
-                  <TableCell>{employee.name}</TableCell>
-                  <TableCell>{employee.jabatan}</TableCell>
-                  <TableCell>{employee.no_hp}</TableCell>
-                  <TableCell>{employee.email}</TableCell>
-                  <TableCell>
-                    <img src={employee.qr_code} alt="QR Code" style={{ width: '100px', height: '100px' }} />
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => { handleEdit(employee.id)}} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => {deleteEmployee(employee.id)}} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
+              {paginatedEmployees.length > 0 ? (
+                paginatedEmployees.map((employee, index) => (
+                  <TableRow key={employee.nik}>
+                    <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                    <TableCell>{employee.nik}</TableCell>
+                    <TableCell>{employee.name}</TableCell>
+                    <TableCell>{employee.jabatan}</TableCell>
+                    <TableCell>{employee.no_hp}</TableCell>
+                    <TableCell>{employee.email}</TableCell>
+                    <TableCell>
+                      <img src={employee.qr_code} alt="QR Code" style={{ width: '100px', height: '100px' }} />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => { handleEdit(employee.id)}} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => {deleteEmployee(employee.id)}} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                    <TableCell colSpan={12} align="center">
+                      Data Not Found
+                    </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </TableContainer>

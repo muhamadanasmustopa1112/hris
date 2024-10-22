@@ -14,6 +14,7 @@ import {
   SnackbarCloseReason,
   Snackbar,
   Alert,
+  Backdrop,
 } from '@mui/material';
 import { SyntheticEvent, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
@@ -21,6 +22,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 
 interface Perizinan {
@@ -28,9 +30,10 @@ interface Perizinan {
     id: number;
     jenis_perizinan_id: number;
     category_id: number;
+    companies_user_id: number;
     jenis_perizinan_name: string;
     category_name: string;
-    companies_user: string;
+    company_user: string;
     tanggal_mulai: string;
     tanggal_selesai: string;
     jam_masuk: string;
@@ -72,6 +75,7 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
   const [open, setOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
+  const [loadingBackDrop, setLoadingBackDrop] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const theme = useTheme();
@@ -89,6 +93,7 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get('token')}`,
           },
         });
   
@@ -112,9 +117,17 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
   };
 
   const handleEdit = (id: number) => {
-   
-    router.push(`/employees/edit-employee/${id}`);
-    console.log(`Editing employee with ID: ${id}`);
+    setLoadingBackDrop(true);
+    setTimeout(() => {
+      router.push(`/perizinan/edit-perizinan/${id}`);
+    }, 2000);
+  };
+
+  const handleAddPerizinan = () => {
+    setLoadingBackDrop(true);
+    setTimeout(() => {
+      router.push('/perizinan/input-perizinan');    
+    }, 2000);
   };
 
   const handleSnackbarClose = (
@@ -129,14 +142,13 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
 
   const handleAlertClose = (event: SyntheticEvent) => {
     setOpen(false); 
-    router.refresh();
+    location.reload();
 
   };
 
   const filteredPerizinans = perizinans.data.filter((perizinan) =>
-    perizinan.companies_user.toLowerCase().includes(searchTerm.toLowerCase())
+    perizinan.company_user?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
 
   const paginatedPerizinans = filteredPerizinans.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -151,9 +163,12 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <Button variant="contained" color="primary" onClick={() => {router.push('/perizinan/input-perizinan')}}>
+        <Button variant="contained" color="primary" onClick={handleAddPerizinan}>
           Add New Perizinan
         </Button>
+        <Backdrop open={loadingBackDrop} style={{ zIndex: 9999, color: '#fff' }}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </div>
       <Paper>
         <TableContainer>
@@ -175,10 +190,11 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {paginatedPerizinans.map((perizinan, index) => (
+            {paginatedPerizinans.length > 0 ? (
+              paginatedPerizinans.map((perizinan, index) => (
                 <TableRow key={perizinan.id}>
                   <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                  <TableCell>{perizinan.companies_user}</TableCell>
+                  <TableCell>{perizinan.company_user}</TableCell>
                   <TableCell>{perizinan.tanggal_mulai}</TableCell>
                   <TableCell>{perizinan.tanggal_selesai ? perizinan.tanggal_selesai : '-'}</TableCell>
                   <TableCell>{perizinan.jam_masuk}</TableCell>
@@ -211,7 +227,14 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
                     </IconButton>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+            ) : (
+              <TableRow>
+                  <TableCell colSpan={12} align="center">
+                    Data Not Found
+                  </TableCell>
+              </TableRow>
+            )}
             </TableBody>
           </Table>
         </TableContainer>

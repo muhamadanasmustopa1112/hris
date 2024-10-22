@@ -2,8 +2,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography, CircularProgress, Breadcrumbs, Link } from '@mui/material';
 import TableEmployee from '../../components/employee-component/TableEmployee';
+import router from 'next/router';
+import PageContainer from '../../components/container/PageContainer';
+import DashboardCard from '../../components/shared/DashboardCard';
 
 interface Employee {
   id: number;
@@ -68,20 +71,31 @@ export default function DataEmployeePage() {
   // const filteredEmployees = employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
-    <Box>
-      <Typography variant="h3" component="h3" gutterBottom>
-        List Data Karyawan
-      </Typography>
-      
-      <TableEmployee
-        employees={{ length: totalEmployees, data: employees  }}
-        loading={loading}
-        error={error}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        handleChangePage={handleChangePage}
-        handleChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </Box>
+    <PageContainer title="Manajemen Karyawan" description="Halaman untuk mengelola data karyawan">
+       <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: '50px' }}>
+        <Link 
+          underline="hover" 
+          color="inherit" 
+          onClick={() => router.push('/')}
+          style={{ cursor: 'pointer' }}
+        >
+          Home
+        </Link>
+        <Typography color="text.primary">Karyawan</Typography>
+      </Breadcrumbs>
+      <DashboardCard title="List Data Karyawan">
+        <Box>
+          <TableEmployee
+            employees={{ length: totalEmployees, data: employees  }}
+            loading={loading}
+            error={error}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            handleChangePage={handleChangePage}
+            handleChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        </Box>
+      </DashboardCard>
+    </PageContainer>
   );
 }

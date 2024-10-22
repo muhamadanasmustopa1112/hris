@@ -2,28 +2,22 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography, CircularProgress, Breadcrumbs, Link } from '@mui/material';
 import TablePerizinan from '../../components/perizinan-component/TablePerizinan';
+import router from 'next/router';
+import PageContainer from '../../components/container/PageContainer';
+import DashboardCard from '../../components/shared/DashboardCard';
 
-interface Employee {
-  id: number;
-  nik: string;
-  name: string;
-  jabatan: string;
-  no_hp: string;
-  email: string;
-  qr_code: string;
-  ktp_karyawan: string;
-}
 
 interface Perizinan {
 
     id: number;
     jenis_perizinan_id: number;
     category_id: number;
+    companies_user_id: number;
     jenis_perizinan_name: string;
     category_name: string;
-    companies_user: string;
+    company_user: string;
     tanggal_mulai: string;
     tanggal_selesai: string;
     jam_masuk: string;
@@ -66,6 +60,7 @@ export default function DataEmployeePage() {
     fetchPerizinans();
   }, []);
 
+
   const handleChangePage = (event: unknown, newPage: number) => {
     console.log("New Page:", newPage); // Tambahkan log ini
 
@@ -82,24 +77,33 @@ export default function DataEmployeePage() {
 
   const totalPerizinans = perizinans.length;
 
-  // Ambil karyawan yang difilter untuk ditampilkan
-//   const filteredPerizinans = perizinans.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
   return (
-    <Box>
-      <Typography variant="h3" component="h3" gutterBottom>
-        List Data Perizinan
-      </Typography>
-      
-      <TablePerizinan
-        perizinans={{ length: totalPerizinans, data: perizinans  }}
-        loading={loading}
-        error={error}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        handleChangePage={handleChangePage}
-        handleChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </Box>
+    <PageContainer title="Manajemen Pengajuan Karyawan" description="Halaman untuk mengelola data pengajuan karyawan">
+      <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: '50px' }}>
+        <Link 
+          underline="hover" 
+          color="inherit" 
+          onClick={() => router.push('/')}
+          style={{ cursor: 'pointer' }}
+        >
+          Home
+        </Link>
+        <Typography color="text.primary">Pengajuan</Typography>
+        <Typography color="text.primary">Cuti</Typography>
+      </Breadcrumbs>
+      <DashboardCard title="List Data Pengajuan Cuti/Izin">
+      <Box>
+        <TablePerizinan
+          perizinans={{ length: totalPerizinans, data: perizinans  }}
+          loading={loading}
+          error={error}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </Box>
+      </DashboardCard>
+    </PageContainer>
   );
 }

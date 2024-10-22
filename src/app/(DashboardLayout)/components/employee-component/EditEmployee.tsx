@@ -1,4 +1,4 @@
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
     Button,
@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { Image, CloudUpload } from '@mui/icons-material';
+import Cookies from 'js-cookie';
 
 const EditEmployee: React.FC = () => {
     const { id } = useParams(); 
@@ -25,15 +26,17 @@ const EditEmployee: React.FC = () => {
     const [formData, setFormData] = useState<{ [key: string]: any }>({
         _method: 'PUT',
         nik: '',
+        no_kk: '',
         name: '',
         gender: '',
         tgl_lahir: '',
         tempat_lahir: '',
         no_hp: '',
         email: '',
-        jabatan: '',
         no_hp_darurat: '',
+        status: '',
         division_id: '',
+        jabatan_id: '',
         alamat: '',
         bpjs_kesehatan: '',
         bpjs_ketenagakerjaan: '',
@@ -46,55 +49,36 @@ const EditEmployee: React.FC = () => {
         image_ijazah_karyawan: null ,
 
     });
+    
     const [divisions, setDivisions] = useState<any[]>([]);
+    const [jabatans, setJabatans] = useState<any[]>([]);
     const [open, setOpen] = useState(false);
     const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
     const [alertMessage, setAlertMessage] = useState('');
-
-    useEffect(() => {
-        if (id) {
-            const fetchEmployeeDetails = async () => {
-                try {
-                    const response = await fetch(`http://127.0.0.1:8000/api/company-user/${id}`);
-                    const data = await response.json();
-                    setEmployeeData(data);
-
-                    // Pastikan division_id valid
-                    const divisionId = data.data.division_id || '';
-                    const isValidDivision = divisions.some(division => division.id === divisionId);
-
-                    setFormData({
-                        _method: 'PUT',
-                        nik: data.data.nik || '',
-                        name: data.data.name || '',
-                        gender: data.data.gender || '',
-                        tgl_lahir: data.data.tgl_lahir || '',
-                        tempat_lahir: data.data.tempat_lahir || '',
-                        no_hp: data.data.no_hp || '',
-                        email: data.data.email || '',
-                        jabatan: data.data.jabatan || '',
-                        no_hp_darurat: data.data.no_hp_darurat || '',
-                        alamat: data.data.alamat || '',
-                        bpjs_kesehatan: data.data.bpjs_kesehatan || '',
-                        bpjs_ketenagakerjaan: data.data.bpjs_ketenagakerjaan || '',
-                        npwp: data.data.npwp || '',
-                        division_id: isValidDivision ? divisionId : '',
-                        image_foto_karyawan: data.data.foto_karyawan || null,
-                        image_ktp_karyawan: data.data.ktp_karyawan || null,
-                        image_ijazah_karyawan: data.data.ijazah_karyawan || null,
-                    });
-                } catch (error) {
-                    console.error('Error fetching employee details:', error);
-                }
-            };
-            fetchEmployeeDetails();
-        }
-    }, [id, divisions]);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchDivisions = async () => {
+
+            const userCookie = Cookies.get('user');
+            const user = userCookie ? JSON.parse(userCookie) : null;
+        
+            if (!user || !user.company_id) {
+                alert("DATA NOT FOUND!");
+              return;
+            }
+            
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/division');
+
+                const response = await axios.get('http://127.0.0.1:8000/api/division', {
+                    params: {
+                      company_id: user.company_id,
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${Cookies.get('token')}`,
+                    },
+                });
+
                 if (Array.isArray(response.data.data)) {
                     setDivisions(response.data.data);
                 } else {
@@ -107,6 +91,88 @@ const EditEmployee: React.FC = () => {
 
         fetchDivisions();
     }, []);
+
+    useEffect(() => {
+        const fetchJabatans = async () => {
+    
+          const userCookie = Cookies.get('user');
+          const user = userCookie ? JSON.parse(userCookie) : null;
+      
+          if (!user || !user.company_id) {
+              alert("DATA NOT FOUND!");
+            return;
+          }
+    
+          try {
+    
+            const response = await axios.get('http://127.0.0.1:8000/api/jabatan', {
+                params: {
+                  company_id: user.company_id,
+                },
+                headers: {
+                    'Authorization': `Bearer ${Cookies.get('token')}`,
+                },
+            });
+    
+            if (Array.isArray(response.data.data)) {
+              setJabatans(response.data.data);
+            } else {
+              console.error('Expected an array, but got:', typeof response.data);
+            }
+          } catch (error) {
+            console.error('Error fetching divisions:', error);
+          }
+        };
+    
+        fetchJabatans();
+      }, []);
+
+      useEffect(() => {
+        if (id) {
+            const fetchEmployeeDetails = async () => {
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/api/company-user/${id}`,{
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${Cookies.get('token')}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    const data = await response.json();
+                    setEmployeeData(data);
+                    const divisionId = data.data.division_id || '';
+                    const isValidDivision = divisions.some(division => division.id === divisionId);
+
+                    setFormData({
+                        _method: 'PUT',
+                        nik: data.data.nik || '',
+                        no_kk: data.data.no_kk || '',
+                        name: data.data.name || '',
+                        gender: data.data.gender || '',
+                        tgl_lahir: data.data.tgl_lahir || '',
+                        tempat_lahir: data.data.tempat_lahir || '',
+                        no_hp: data.data.no_hp || '',
+                        email: data.data.email || '',
+                        jabatan: data.data.jabatan || '',
+                        no_hp_darurat: data.data.no_hp_darurat || '',
+                        status: data.data.status || '',
+                        alamat: data.data.alamat || '',
+                        bpjs_kesehatan: data.data.bpjs_kesehatan || '',
+                        bpjs_ketenagakerjaan: data.data.bpjs_ketenagakerjaan || '',
+                        npwp: data.data.npwp || '',
+                        division_id: isValidDivision ? divisionId : '',
+                        jabatan_id: data.data.jabatan_id || '',
+                        image_foto_karyawan: data.data.foto_karyawan || null,
+                        image_ktp_karyawan: data.data.ktp_karyawan || null,
+                        image_ijazah_karyawan: data.data.ijazah_karyawan || null,
+                    });
+                } catch (error) {
+                    console.error('Error fetching employee details:', error);
+                }
+            };
+            fetchEmployeeDetails();
+        }
+    }, [id, divisions]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
@@ -149,29 +215,31 @@ const EditEmployee: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        
-        console.log(formData)
-
         try {
-
             const response = await axios.post(`http://127.0.0.1:8000/api/company-user/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${Cookies.get('token')}`,
+
                 }
             });
-
-            setAlertSeverity('success');
-            setAlertMessage('Employee updated successfully!');
-            setOpen(true);
-
+            console.log(formData);
+            if(response.status === 200){
+                setAlertSeverity('success');
+                setAlertMessage('Employee updated successfully!');
+                setOpen(true);
+            }
+       
         } catch (error) {
             if (axios.isAxiosError(error)) {
+
                 const errorMessages = error.response?.data.errors;
                 const message = Object.values(errorMessages).flat().join(', ') || 'Terjadi kesalahan';
-                console.log(JSON.stringify(formData));
+
                 setAlertMessage(message);
                 setAlertSeverity('error');
                 setOpen(true);
+                
               } else {
                 console.error('Error updated employee:', error);
               }
@@ -187,6 +255,8 @@ const EditEmployee: React.FC = () => {
 
     const handleAlertClose = () => {
         setOpen(false);
+        router.push('/employees/data-employee');    
+
     };
 
     return (
@@ -199,9 +269,18 @@ const EditEmployee: React.FC = () => {
                             variant="outlined"
                             fullWidth
                             name="nik"
-                            value={formData.nik || ''} // Pastikan tidak null
+                            value={formData.nik || ''} 
                             onChange={handleChange}
-                            required
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="No KK"
+                            variant="outlined"
+                            fullWidth
+                            name="no_kk"
+                            value={formData.no_kk || ''} 
+                            onChange={handleChange}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -210,7 +289,7 @@ const EditEmployee: React.FC = () => {
                             variant="outlined"
                             fullWidth
                             name="name"
-                            value={formData.name || ''} // Pastikan tidak null
+                            value={formData.name || ''}
                             onChange={handleChange}
                             required
                         />
@@ -220,7 +299,7 @@ const EditEmployee: React.FC = () => {
                             <InputLabel>Gender</InputLabel>
                             <Select
                                 name="gender"
-                                value={formData.gender || ''} // Pastikan tidak null
+                                value={formData.gender || ''}
                                 onChange={handleSelectChange}
                                 label="Gender"
                             >
@@ -238,7 +317,7 @@ const EditEmployee: React.FC = () => {
                             type="date"
                             fullWidth
                             name="tgl_lahir"
-                            value={formData.tgl_lahir || ''} // Pastikan tidak null
+                            value={formData.tgl_lahir || ''}
                             onChange={handleChange}
                             InputLabelProps={{
                                 shrink: true,
@@ -252,7 +331,7 @@ const EditEmployee: React.FC = () => {
                             variant="outlined"
                             fullWidth
                             name="tempat_lahir"
-                            value={formData.tempat_lahir || ''} // Pastikan tidak null
+                            value={formData.tempat_lahir || ''}
                             onChange={handleChange}
                             required
                         />
@@ -263,7 +342,7 @@ const EditEmployee: React.FC = () => {
                             variant="outlined"
                             fullWidth
                             name="no_hp"
-                            value={formData.no_hp || ''} // Pastikan tidak null
+                            value={formData.no_hp || ''}
                             onChange={handleChange}
                             required
                         />
@@ -275,21 +354,27 @@ const EditEmployee: React.FC = () => {
                             fullWidth
                             type="email"
                             name="email"
-                            value={formData.email || ''} // Pastikan tidak null
+                            value={formData.email || ''}
                             onChange={handleChange}
                             required
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Jabatan"
-                            variant="outlined"
-                            fullWidth
-                            name="jabatan"
-                            value={formData.jabatan || ''} // Pastikan tidak null
-                            onChange={handleChange}
-                            required
-                        />
+                        <FormControl variant="outlined" fullWidth required>
+                            <InputLabel>Jabatan</InputLabel>
+                            <Select
+                                name="jabatan_id"
+                                value={formData.jabatan_id || ''}
+                                onChange={handleSelectChange}
+                                label="Jabatan"
+                            >
+                                {jabatans.map((jabatan) => (
+                                    <MenuItem key={jabatan.id} value={jabatan.id}>
+                                        {jabatan.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
@@ -297,7 +382,7 @@ const EditEmployee: React.FC = () => {
                             variant="outlined"
                             fullWidth
                             name="no_hp_darurat"
-                            value={formData.no_hp_darurat || ''} // Pastikan tidak null
+                            value={formData.no_hp_darurat || ''}
                             onChange={handleChange}
                             required
                         />
@@ -316,6 +401,21 @@ const EditEmployee: React.FC = () => {
                                         {division.name}
                                     </MenuItem>
                                 ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <FormControl variant="outlined" fullWidth required>
+                            <InputLabel>Status</InputLabel>
+                            <Select
+                                name="status"
+                                value={formData.status || ''}
+                                onChange={handleSelectChange}
+                                label="Status"
+                            >
+                                <MenuItem value=""><em>None</em></MenuItem>
+                                <MenuItem value="Active">Active</MenuItem>
+                                <MenuItem value="Non Active">Non Active</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>

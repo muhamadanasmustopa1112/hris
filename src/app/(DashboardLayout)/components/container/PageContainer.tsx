@@ -1,23 +1,42 @@
-// import { Helmet } from 'react-helmet';
+import { Typography, Box } from '@mui/material';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 
+interface Props {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}
 
-type Props = {
-  description?: string;
-  children: JSX.Element | JSX.Element[];
-  title?: string;
+const PageContainer = ({ title, description, children }: Props) => {
+  
+  console.log("PageContainer title:", title);
+  console.log("PageContainer description:", description);
+
+  return (
+    <HelmetProvider>
+      <div>
+        <Helmet>
+          <title>{title}</title>
+          <meta name="description" content={description} />
+        </Helmet>
+
+        {/* Display the title and description on the page */}
+        {description && (
+          <Box mb={4}> 
+            <Typography variant="h4" gutterBottom>
+              {title}
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary">
+              {description}
+            </Typography>
+          </Box>
+        )}
+
+        {/* Render children */}
+        {children}
+      </div>
+    </HelmetProvider>
+  );
 };
-
-const PageContainer = ({ title, description, children }: Props) => (
-  <HelmetProvider>
-    <div>
-      <Helmet>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-      </Helmet>
-      {children}
-    </div>
-  </HelmetProvider>
-);
 
 export default PageContainer;

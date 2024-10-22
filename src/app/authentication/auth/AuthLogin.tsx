@@ -1,16 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
-  FormGroup,
-  FormControlLabel,
   Button,
   Stack,
-  Checkbox,
 } from "@mui/material";
-import Link from "next/link";
-
 import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import Cookies from 'js-cookie';
 
 interface loginType {
   title?: string;
@@ -18,81 +16,121 @@ interface loginType {
   subtext?: JSX.Element | JSX.Element[];
 }
 
-const AuthLogin = ({ title, subtitle, subtext }: loginType) => (
-  <>
-    {title ? (
-      <Typography fontWeight="700" variant="h2" mb={1}>
-        {title}
-      </Typography>
-    ) : null}
+const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-    {subtext}
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+  
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/login", {
+        email,
+        password,
+      });
+    
+     
+      if (response.data.user && response.data.token) {
+        Cookies.set("user", JSON.stringify(response.data.user), { expires: 1 });
+        Cookies.set("token", response.data.token, { expires: 1 });
 
-    <Stack>
-      <Box>
-        <Typography
-          variant="subtitle1"
-          fontWeight={600}
-          component="label"
-          htmlFor="username"
-          mb="5px"
-        >
-          Username
+        
+        router.push("/");
+      } else {
+        setError("Login failed. Please check your credentials.");
+      }
+  
+    } catch (err) {
+      setError("Login failed. Please check your credentials.");
+      console.error("Login error:", err);
+    }
+  };
+
+  
+  useEffect(() => {
+    const checkSession = setInterval(() => {
+      const token = Cookies.get("token");
+      if (!token) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        router.push("/authentication/login"); 
+      }
+    }, 7200000); 
+  
+    return () => clearInterval(checkSession);
+  }, [router]);
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {title ? (
+        <Typography fontWeight="700" variant="h2" mb={1}>
+          {title}
         </Typography>
-        <CustomTextField variant="outlined" fullWidth />
-      </Box>
-      <Box mt="25px">
-        <Typography
-          variant="subtitle1"
-          fontWeight={600}
-          component="label"
-          htmlFor="password"
-          mb="5px"
-        >
-          Password
-        </Typography>
-        <CustomTextField type="password" variant="outlined" fullWidth />
-      </Box>
-      <Stack
-        justifyContent="space-between"
-        direction="row"
-        alignItems="center"
-        my={2}
-      >
-        <FormGroup>
-          <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label="Remeber this Device"
+      ) : null}
+
+      {subtext}
+
+      <Stack>
+        <Box>
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            component="label"
+            htmlFor="email"
+            mb="5px"
+          >
+            Email
+          </Typography>
+          <CustomTextField
+            variant="outlined"
+            fullWidth
+            value={email}
+            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setEmail(e.target.value)}
+            required
           />
-        </FormGroup>
-        <Typography
-          component={Link}
-          href="/"
-          fontWeight="500"
-          sx={{
-            textDecoration: "none",
-            color: "primary.main",
-          }}
-        >
-          Forgot Password ?
-        </Typography>
+        </Box>
+        <Box mt="25px" mb={3}>
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            component="label"
+            htmlFor="password"
+            mb="5px"
+          >
+            Password
+          </Typography>
+          <CustomTextField
+            type="password"
+            variant="outlined"
+            fullWidth
+            value={password}
+            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setPassword(e.target.value)}
+            required
+          />
+        </Box>
+        {error && (
+          <Typography color="error" variant="body2" mt={1}>
+            {error}
+          </Typography>
+        )}
       </Stack>
-    </Stack>
-    <Box>
-      <Button
-        color="primary"
-        variant="contained"
-        size="large"
-        fullWidth
-        component={Link}
-        href="/"
-        type="submit"
-      >
-        Sign In
-      </Button>
-    </Box>
-    {subtitle}
-  </>
-);
+      <Box>
+        <Button
+          color="primary"
+          variant="contained"
+          size="large"
+          fullWidth
+          type="submit"
+        >
+          Sign In
+        </Button>
+      </Box>
+      {subtitle}
+    </form>
+  );
+};
 
 export default AuthLogin;

@@ -2,11 +2,10 @@
 import { Grid, Box, Card, Typography, Stack } from "@mui/material";
 import Link from "next/link";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
-import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
 import AuthRegister from "../auth/AuthRegister";
 
 const Register2 = () => (
-  <PageContainer title="Register" description="this is Register page">
+  <PageContainer title="Register" description="">
     <Box
       sx={{
         position: "relative",
@@ -43,7 +42,7 @@ const Register2 = () => (
             sx={{ p: 4, zIndex: 1, width: "100%", maxWidth: "500px" }}
           >
             <Box display="flex" alignItems="center" justifyContent="center">
-              <Logo />
+              <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%', marginTop: '-100px', marginBottom: '-140px'}} />
             </Box>
             <AuthRegister
               subtext={
@@ -51,9 +50,9 @@ const Register2 = () => (
                   variant="subtitle1"
                   textAlign="center"
                   color="textSecondary"
-                  mb={1}
+                  mb={3}
                 >
-                  Your Social Campaigns
+                    Aplikasi untuk mempermudah absensi
                 </Typography>
               }
               subtitle={

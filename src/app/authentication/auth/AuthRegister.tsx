@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import Link  from 'next/link';
 
 import CustomTextField from '@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField';
 import { Stack } from '@mui/system';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 interface registerType {
     title?: string;
@@ -11,36 +13,112 @@ interface registerType {
     subtext?: JSX.Element | JSX.Element[];
   }
 
-const AuthRegister = ({ title, subtitle, subtext }: registerType) => (
-    <>
-        {title ? (
-            <Typography fontWeight="700" variant="h2" mb={1}>
-                {title}
-            </Typography>
-        ) : null}
+const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
+    const router = useRouter();
+    const [name, setName] = useState("");
+    const [userName, setUserName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordConfirmation, setPasswordConfirmation] = useState("");
+    const [error, setError] = useState("");
 
-        {subtext}
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError("");
+      
+        try {
+          const response = await axios.post("http://127.0.0.1:8000/api/create-company", {
+            company_name: name,
+            user_name: userName,
+            email: email,
+            password: password,
+            password_confirmation: passwordConfirmation,
+          });
 
-        <Box>
-            <Stack mb={3}>
-                <Typography variant="subtitle1"
-                    fontWeight={600} component="label" htmlFor='name' mb="5px">Name</Typography>
-                <CustomTextField id="name" variant="outlined" fullWidth />
+          if (response.status == 201) {
+            router.push("/authentication/login");
+          } else {
+            setError("Login failed. Please check your credentials.");
+          }
+      
+        } catch (err) {
+          setError("Register failed. Please check your credentials.");
+          console.error("Login error:", err);
+        }
+      };
+    
+    return (
+        <form onSubmit={handleSubmit}>
+            {title ? (
+                <Typography fontWeight="700" variant="h2" mb={1}>
+                    {title}
+                </Typography>
+            ) : null}
 
-                <Typography variant="subtitle1"
-                    fontWeight={600} component="label" htmlFor='email' mb="5px" mt="25px">Email Address</Typography>
-                <CustomTextField id="email" variant="outlined" fullWidth />
+            {subtext}
 
-                <Typography variant="subtitle1"
-                    fontWeight={600} component="label" htmlFor='password' mb="5px" mt="25px">Password</Typography>
-                <CustomTextField id="password" variant="outlined" fullWidth />
-            </Stack>
-            <Button color="primary" variant="contained" size="large" fullWidth component={Link} href="/authentication/login">
-                Sign Up
-            </Button>
-        </Box>
-        {subtitle}
-    </>
-);
+            <Box>
+                <Stack mb={3}>
+                    <Typography variant="subtitle1"
+                        fontWeight={600} component="label" htmlFor='name' mb="5px">Company Name</Typography>
+                    <CustomTextField 
+                        id="name" 
+                        variant="outlined" 
+                        value={name}
+                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setName(e.target.value)}
+                        required
+                        fullWidth 
+                    />
+                    <Typography variant="subtitle1"
+                        fontWeight={600} component="label" htmlFor='username' mb="5px" mt="25px">Username</Typography>
+                    <CustomTextField 
+                        id="username" 
+                        variant="outlined" 
+                        value={userName}
+                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setUserName(e.target.value)}
+                        required
+                        fullWidth 
+                    />
+                    <Typography variant="subtitle1"
+                        fontWeight={600} component="label" htmlFor='email' mb="5px" mt="25px">Email Address</Typography>
+                    <CustomTextField
+                        id="email" 
+                        variant="outlined" 
+                        value={email}
+                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setEmail(e.target.value)}
+                        required
+                        fullWidth 
+                    />
+                    <Typography variant="subtitle1"
+                        fontWeight={600} component="label" htmlFor='password' mb="5px" mt="25px">Password</Typography>
+                    <CustomTextField 
+                        id="password" 
+                        type="password"
+                        variant="outlined" 
+                        value={password}
+                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setPassword(e.target.value)}
+                        required
+                        fullWidth 
+                    />
+                    <Typography variant="subtitle1"
+                        fontWeight={600} component="label" htmlFor='password_confirmation' mb="5px" mt="25px">Password Confirmation</Typography>
+                    <CustomTextField 
+                        id="password_confirmation" 
+                        type="password"
+                        variant="outlined" 
+                        value={passwordConfirmation}
+                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setPasswordConfirmation(e.target.value)}
+                        required
+                        fullWidth 
+                    />
+                </Stack>
+                <Button color="primary" variant="contained" size="large" fullWidth type="submit">
+                    Sign Up
+                </Button>
+            </Box>
+            {subtitle}
+        </form>
+    );
+}
 
 export default AuthRegister;

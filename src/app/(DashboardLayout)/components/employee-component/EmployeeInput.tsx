@@ -14,25 +14,36 @@ import {
   Alert,
   SelectChangeEvent,
   SnackbarCloseReason,
+  
 } from '@mui/material';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 interface Division {
   id: number;
   name: string;
 }
 
+interface Jabatan {
+  id: number;
+  name: string;
+}
+
 const EmployeeInput: React.FC = () => {
   const [divisions, setDivisions] = useState<Division[]>([]);
+  const [jabatans, setJabatans] = useState<Jabatan[]>([]);
+  const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState<{ [key: string]: any }>({
     nik: '',
+    no_kk: '',
     name: '',
     gender: '',
     tgl_lahir: '',
     tempat_lahir: '',
     no_hp: '',
     email: '',
-    jabatan: '',
     no_hp_darurat: '',
+    status: '',
     alamat: '',
     bpjs_kesehatan: '',
     bpjs_ketenagakerjaan: '',
@@ -41,17 +52,37 @@ const EmployeeInput: React.FC = () => {
     ktp_karyawan: null,
     ijazah_karyawan: null,
     company_id: '',
-    division: '',
+    division_id: '',
+    jabatan_id: '',
   });
 
   const [open, setOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchDivisions = async () => {
+
+      const userCookie = Cookies.get('user');
+      const user = userCookie ? JSON.parse(userCookie) : null;
+  
+      if (!user || !user.company_id) {
+          alert("DATA NOT FOUND!");
+        return;
+      }
+
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/division');
+
+        const response = await axios.get('http://127.0.0.1:8000/api/division', {
+          params: {
+            company_id: user.company_id,
+          },
+          headers: {
+            'Authorization': `Bearer ${Cookies.get('token')}`,
+          },
+        });
+
         if (Array.isArray(response.data.data)) {
           setDivisions(response.data.data);
         } else {
@@ -63,6 +94,67 @@ const EmployeeInput: React.FC = () => {
     };
 
     fetchDivisions();
+  }, []);
+
+  useEffect(() => {
+    const fetchJabatans = async () => {
+
+      const userCookie = Cookies.get('user');
+      const user = userCookie ? JSON.parse(userCookie) : null;
+  
+      if (!user || !user.company_id) {
+          alert("DATA NOT FOUND!");
+        return;
+      }
+
+      try {
+
+        const response = await axios.get('http://127.0.0.1:8000/api/jabatan', {
+          params: {
+            company_id: user.company_id,
+          },
+          headers: {
+            'Authorization': `Bearer ${Cookies.get('token')}`,
+          },
+        });
+
+        if (Array.isArray(response.data.data)) {
+          setJabatans(response.data.data);
+        } else {
+          console.error('Expected an array, but got:', typeof response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching divisions:', error);
+      }
+    };
+
+    fetchJabatans();
+  }, []);
+
+   useEffect(() => {
+    const userCookie = Cookies.get('user');
+
+    if (userCookie) {
+      try {
+        const userParsed = JSON.parse(userCookie);
+        setUser(userParsed);
+
+        if (userParsed.company_id) {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            company_id: userParsed.company_id,
+          }));
+        } else {
+          console.log('Company ID tidak ditemukan dalam cookie user');
+        }
+
+      } catch (error) {
+        console.error('Error parsing user cookie:', error);
+      }
+
+    } else {
+      console.log('Cookie user tidak ditemukan');
+    }
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,6 +194,7 @@ const EmployeeInput: React.FC = () => {
       const response = await axios.post('http://127.0.0.1:8000/api/create-company-user', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${Cookies.get('token')}`,
         },
       });
       console.log('Employee created:', response);
@@ -129,13 +222,14 @@ const EmployeeInput: React.FC = () => {
     reason: SnackbarCloseReason
   ) => {
     if (reason === 'clickaway') {
-      return; // Prevent closing on clickaway
+      return; 
     }
-    setOpen(false); // Close the Snackbar
+    setOpen(false); 
   };
 
   const handleAlertClose = (event: SyntheticEvent) => {
-    setOpen(false); // Close the Snackbar
+    setOpen(false);
+    router.push('/employees/data-employee');    
   };
 
   return (
@@ -150,7 +244,16 @@ const EmployeeInput: React.FC = () => {
               name="nik"
               value={formData.nik}
               onChange={handleChange}
-              required
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="No KK"
+              variant="outlined"
+              fullWidth
+              name="no_kk"
+              value={formData.no_kk}
+              onChange={handleChange}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -176,7 +279,6 @@ const EmployeeInput: React.FC = () => {
                 <MenuItem value=""><em>None</em></MenuItem>
                 <MenuItem value="Laki-Laki">Laki-Laki</MenuItem>
                 <MenuItem value="Perempuan">Perempuan</MenuItem>
-                <MenuItem value="Lainnya">Lainnya</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -230,15 +332,40 @@ const EmployeeInput: React.FC = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              label="Jabatan"
-              variant="outlined"
-              fullWidth
-              name="jabatan"
-              value={formData.jabatan}
-              onChange={handleChange}
-              required
-            />
+           <FormControl variant="outlined" fullWidth required>
+              <InputLabel>Jabatan</InputLabel>
+              <Select
+                name="jabatan_id"
+                value={formData.jabatan_id}
+                onChange={handleSelectChange}
+                label="Jabatan"
+              >
+                <MenuItem value=""><em>Select Jabatan</em></MenuItem>
+                {jabatans.map((jabatan) => (
+                  <MenuItem key={jabatan.id} value={jabatan.id}>
+                    {jabatan.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl variant="outlined" fullWidth required>
+              <InputLabel>Divisi</InputLabel>
+              <Select
+                name="division_id"
+                value={formData.division_id}
+                onChange={handleSelectChange}
+                label="Divisi"
+              >
+                <MenuItem value=""><em>Select Divisi</em></MenuItem>
+                {divisions.map((division) => (
+                  <MenuItem key={division.id} value={division.id}>
+                    {division.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -253,19 +380,16 @@ const EmployeeInput: React.FC = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl variant="outlined" fullWidth required>
-              <InputLabel>Divisi</InputLabel>
+              <InputLabel>Status</InputLabel>
               <Select
-                name="division"
-                value={formData.division}
+                name="status"
+                value={formData.status}
                 onChange={handleSelectChange}
-                label="Divisi"
+                label="status"
               >
-                <MenuItem value=""><em>Select Divisi</em></MenuItem>
-                {divisions.map((division) => (
-                  <MenuItem key={division.id} value={division.id}>
-                    {division.name}
-                  </MenuItem>
-                ))}
+                <MenuItem value=""><em>None</em></MenuItem>
+                <MenuItem value="Active">Active</MenuItem>
+                <MenuItem value="Non Active">Non Active</MenuItem>
               </Select>
             </FormControl>
           </Grid>
