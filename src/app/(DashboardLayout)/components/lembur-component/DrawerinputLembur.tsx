@@ -45,7 +45,7 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
     setLoading(true);
     setSnackbarOpen(false);
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/lembur', {
+      const response = await fetch('https://backend-apps.ptspsi.co.id/api/lembur', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

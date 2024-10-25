@@ -33,7 +33,7 @@ const DrawerEditJabatan: React.FC<DrawerEditJabatanProps> = ({ open, onClose, on
     const fetchJabatanData = async () => {
       if (open && jabatanId) {
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/jabatan/${jabatanId}`, {
+          const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/jabatan/${jabatanId}`, {
             headers: {
               'Authorization': `Bearer ${Cookies.get('token')}`,
             }
@@ -71,7 +71,7 @@ const DrawerEditJabatan: React.FC<DrawerEditJabatanProps> = ({ open, onClose, on
 
     setLoading(true);
     try {
-      const response = await axios.put(`http://127.0.0.1:8000/api/jabatan/${jabatanId}`, {
+      const response = await axios.put(`https://backend-apps.ptspsi.co.id/api/jabatan/${jabatanId}`, {
           name: jabatanName,
         }, {
           headers: {

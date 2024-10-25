@@ -48,7 +48,7 @@ const DrawerEditKasbon: React.FC<DrawerEditKasbonProps> = ({ open, onClose, onSu
     const fetchKasbonData = async () => {
       if (open && kasbonId) {
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/kasbon/${kasbonId}`, {
+          const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/kasbon/${kasbonId}`, {
             headers: {
               'Authorization': `Bearer ${Cookies.get('token')}`,
             }
@@ -74,7 +74,7 @@ const DrawerEditKasbon: React.FC<DrawerEditKasbonProps> = ({ open, onClose, onSu
     setLoading(true);
     setSnackbarOpen(false);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/kasbon/${kasbonId}`, {
+      const response = await fetch(`https://backend-apps.ptspsi.co.id/api/kasbon/${kasbonId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

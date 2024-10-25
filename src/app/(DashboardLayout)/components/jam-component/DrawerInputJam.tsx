@@ -55,7 +55,7 @@ const DrawerInputJam: React.FC<DrawerInputJamtProps> = ({ open, onClose, onSucce
     setLoading(true);
     try {
 
-      const response = await axios.post('http://127.0.0.1:8000/api/jam', {
+      const response = await axios.post('https://backend-apps.ptspsi.co.id/api/jam', {
           shift_id: shiftId,
           jam_masuk: jamMasuk,
           jam_keluar: jamKeluar,
@@ -99,7 +99,7 @@ const DrawerInputJam: React.FC<DrawerInputJamtProps> = ({ open, onClose, onSucce
         
         try {
         
-        const response = await axios.get('http://127.0.0.1:8000/api/shift-active', {
+        const response = await axios.get('https://backend-apps.ptspsi.co.id/api/shift-active', {
             params: {
             company_id: user.company_id,
             },

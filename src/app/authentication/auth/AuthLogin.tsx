@@ -27,7 +27,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     setError("");
   
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/login", {
+      const response = await axios.post("https://backend-apps.ptspsi.co.id/api/login", {
         email,
         password,
       });

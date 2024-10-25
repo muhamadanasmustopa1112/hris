@@ -97,13 +97,13 @@ const DrawerInputPresensi: React.FC<DrawerInputPresensiProps> = ({ open, onClose
         };
 
         try {
-            const response_masuk = await axios.post('http://127.0.0.1:8000/api/presensi-masuk', dataMasuk, {
+            const response_masuk = await axios.post('https://backend-apps.ptspsi.co.id/api/presensi-masuk', dataMasuk, {
                 headers: {
                     'Authorization': `Bearer ${Cookies.get('token')}`,
                 }
             });
             console.log("Response API Presensi Masuk:", response_masuk.data.status);
-            const response_keluar = await axios.post('http://127.0.0.1:8000/api/presensi-keluar', dataKeluar, {
+            const response_keluar = await axios.post('https://backend-apps.ptspsi.co.id/api/presensi-keluar', dataKeluar, {
                 headers: {
                     'Authorization': `Bearer ${Cookies.get('token')}`,
                 }

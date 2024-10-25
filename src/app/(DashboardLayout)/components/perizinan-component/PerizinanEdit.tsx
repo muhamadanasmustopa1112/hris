@@ -82,7 +82,7 @@ const PerizinanEdit: React.FC = () => {
 
   const fetchJenisIzin = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/jenis-izin', {
+      const response = await axios.get('https://backend-apps.ptspsi.co.id/api/jenis-izin', {
         headers: {
           'Authorization': `Bearer ${Cookies.get('token')}`,
         }
@@ -99,7 +99,7 @@ const PerizinanEdit: React.FC = () => {
 
   const fetchCategory = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/category-izin', {
+      const response = await axios.get('https://backend-apps.ptspsi.co.id/api/category-izin', {
         headers: {
           'Authorization': `Bearer ${Cookies.get('token')}`,
         }
@@ -124,7 +124,7 @@ const PerizinanEdit: React.FC = () => {
     const fetchPerizinan = async () => {
       if (id) {
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/perizinan/${id}`, {
+          const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/perizinan/${id}`, {
             headers: {
               'Authorization': `Bearer ${Cookies.get('token')}`,
             }
@@ -218,7 +218,7 @@ const PerizinanEdit: React.FC = () => {
 
     e.preventDefault();
     try {
-      const response = await axios.post(`http://127.0.0.1:8000/api/perizinan/${id}`, formData, {
+      const response = await axios.post(`https://backend-apps.ptspsi.co.id/api/perizinan/${id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${Cookies.get('token')}`,

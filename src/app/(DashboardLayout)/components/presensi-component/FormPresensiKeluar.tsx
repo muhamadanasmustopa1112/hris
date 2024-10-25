@@ -103,7 +103,7 @@ const FormPresensiKeluar: React.FC<FormPresensiKeluarProps> = ({
             
             try {
             
-            const response = await axios.get('http://127.0.0.1:8000/api/shift-active', {
+            const response = await axios.get('https://backend-apps.ptspsi.co.id/api/shift-active', {
                 params: {
                     company_id: user.company_id,
                 },

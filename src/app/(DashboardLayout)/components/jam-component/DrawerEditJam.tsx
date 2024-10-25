@@ -46,7 +46,7 @@ const DrawerEditJam: React.FC<DrawerEditJamProps> = ({ open, onClose, onSuccess,
     const fetchJamdata = async () => {
       if (open && jamId) {
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/jam/${jamId}`, {
+          const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/jam/${jamId}`, {
             headers: {
               'Authorization': `Bearer ${Cookies.get('token')}`,
             }
@@ -69,7 +69,7 @@ const DrawerEditJam: React.FC<DrawerEditJamProps> = ({ open, onClose, onSuccess,
     setLoading(true);
     setSnackbarOpen(false);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/jam/${jamId}`, {
+      const response = await fetch(`https://backend-apps.ptspsi.co.id/api/jam/${jamId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ const DrawerEditJam: React.FC<DrawerEditJamProps> = ({ open, onClose, onSuccess,
         
         try {
         
-        const response = await axios.get('http://127.0.0.1:8000/api/shift-active', {
+        const response = await axios.get('https://backend-apps.ptspsi.co.id/api/shift-active', {
             params: {
               company_id: user.company_id,
             },

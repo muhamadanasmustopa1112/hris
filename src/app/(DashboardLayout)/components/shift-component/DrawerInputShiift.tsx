@@ -53,7 +53,7 @@ const DrawerInputShift: React.FC<DrawerInputShiftProps> = ({ open, onClose, onSu
     setLoading(true);
     try {
 
-      const response = await axios.post('http://127.0.0.1:8000/api/shift', {
+      const response = await axios.post('https://backend-apps.ptspsi.co.id/api/shift', {
           name: shiftName,
           status: status,
           company_id: user.company_id,

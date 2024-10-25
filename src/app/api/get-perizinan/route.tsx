@@ -38,7 +38,7 @@ export async function GET() {
       return NextResponse.json({ message: 'User or company_id not found' }, { status: 400 });
     }
 
-    const apiUrl = `http://127.0.0.1:8000/api/perizinan?company_id=${userObject.company_id}`; 
+    const apiUrl = `https://backend-apps.ptspsi.co.id/api/perizinan?company_id=${userObject.company_id}`; 
 
     const response = await fetch(apiUrl, {
       cache: 'no-store',

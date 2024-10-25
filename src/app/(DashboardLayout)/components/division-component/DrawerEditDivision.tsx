@@ -33,7 +33,7 @@ const DrawerEditDivision: React.FC<DrawerEditDivisionProps> = ({ open, onClose, 
     const fetchDivisionData = async () => {
       if (open && divisionId) {
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/division/${divisionId}`, {
+          const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/division/${divisionId}`, {
             headers: {
               'Authorization': `Bearer ${Cookies.get('token')}`,
             }
@@ -71,7 +71,7 @@ const DrawerEditDivision: React.FC<DrawerEditDivisionProps> = ({ open, onClose, 
 
     setLoading(true);
     try {
-      const response = await axios.put(`http://127.0.0.1:8000/api/division/${divisionId}`, {
+      const response = await axios.put(`https://backend-apps.ptspsi.co.id/api/division/${divisionId}`, {
           name: divisionName,
         }, {
           headers: {

@@ -48,7 +48,7 @@ const userCookie = Cookies.get('user');
     setLoading(true);
     try {
 
-      const response = await axios.post('http://127.0.0.1:8000/api/division', {
+      const response = await axios.post('https://backend-apps.ptspsi.co.id/api/division', {
           name: divisionName,
           company_id: user.company_id,
         }, {

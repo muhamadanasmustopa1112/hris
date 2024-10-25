@@ -27,7 +27,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
         setError("");
       
         try {
-          const response = await axios.post("http://127.0.0.1:8000/api/create-company", {
+          const response = await axios.post("https://backend-apps.ptspsi.co.id/api/create-company", {
             company_name: name,
             user_name: userName,
             email: email,

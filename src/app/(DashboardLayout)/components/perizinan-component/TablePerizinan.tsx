@@ -89,7 +89,7 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
     const confirmDelete = window.confirm("Are you sure you want to delete this Perizinan?");
     if (confirmDelete) {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/perizinan/${id}`, {
+        const response = await fetch(`https://backend-apps.ptspsi.co.id/api/perizinan/${id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',

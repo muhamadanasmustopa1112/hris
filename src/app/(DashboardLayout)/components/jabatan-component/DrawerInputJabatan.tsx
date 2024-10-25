@@ -48,7 +48,7 @@ const DrawerInputJabatan: React.FC<DrawerInputDivisionProps> = ({ open, onClose,
     setLoading(true);
     try {
 
-      const response = await axios.post('http://127.0.0.1:8000/api/jabatan', {
+      const response = await axios.post('https://backend-apps.ptspsi.co.id/api/jabatan', {
           name: jabatanName,
           company_id: user.company_id,
         }, {

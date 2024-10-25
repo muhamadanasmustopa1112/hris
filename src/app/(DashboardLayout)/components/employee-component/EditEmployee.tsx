@@ -70,7 +70,7 @@ const EditEmployee: React.FC = () => {
             
             try {
 
-                const response = await axios.get('http://127.0.0.1:8000/api/division', {
+                const response = await axios.get('https://backend-apps.ptspsi.co.id/api/division', {
                     params: {
                       company_id: user.company_id,
                     },
@@ -105,7 +105,7 @@ const EditEmployee: React.FC = () => {
     
           try {
     
-            const response = await axios.get('http://127.0.0.1:8000/api/jabatan', {
+            const response = await axios.get('https://backend-apps.ptspsi.co.id/api/jabatan', {
                 params: {
                   company_id: user.company_id,
                 },
@@ -131,7 +131,7 @@ const EditEmployee: React.FC = () => {
         if (id) {
             const fetchEmployeeDetails = async () => {
                 try {
-                    const response = await fetch(`http://127.0.0.1:8000/api/company-user/${id}`,{
+                    const response = await fetch(`https://backend-apps.ptspsi.co.id/api/company-user/${id}`,{
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${Cookies.get('token')}`,
@@ -216,7 +216,7 @@ const EditEmployee: React.FC = () => {
         event.preventDefault();
 
         try {
-            const response = await axios.post(`http://127.0.0.1:8000/api/company-user/${id}`, formData, {
+            const response = await axios.post(`https://backend-apps.ptspsi.co.id/api/company-user/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${Cookies.get('token')}`,

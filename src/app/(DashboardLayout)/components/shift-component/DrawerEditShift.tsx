@@ -38,7 +38,7 @@ const DrawerEditShift: React.FC<DrawerEditShiftProps> = ({ open, onClose, onSucc
     const fetchShiftData = async () => {
       if (open && shiftId) {
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/shift/${shiftId}`, {
+          const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/shift/${shiftId}`, {
             headers: {
               'Authorization': `Bearer ${Cookies.get('token')}`,
             }
@@ -78,7 +78,7 @@ const DrawerEditShift: React.FC<DrawerEditShiftProps> = ({ open, onClose, onSucc
 
     setLoading(true);
     try {
-      const response = await axios.put(`http://127.0.0.1:8000/api/shift/${shiftId}`, {
+      const response = await axios.put(`https://backend-apps.ptspsi.co.id/api/shift/${shiftId}`, {
           name: shiftName,
           status: status,
         }, {
