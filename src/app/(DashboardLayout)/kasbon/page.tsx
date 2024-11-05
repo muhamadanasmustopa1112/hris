@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Breadcrumbs, Link } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -27,10 +27,12 @@ export default function DataKasbonPage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-
   const router = useRouter();
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
 
-  const fetchKasbons = async () => {
+  const fetchKasbons = useCallback(async () => {
 
     const userCookie = Cookies.get('user');
     const user = userCookie ? JSON.parse(userCookie) : null;
@@ -42,12 +44,16 @@ export default function DataKasbonPage() {
     
     try {
       
-      const response = await axios.get('https://backend-apps.ptspsi.co.id/api/kasbon', {
-        params: {
-          company_id: user.company_id,
-        },
+      const endpoint = user?.roles[0].name === "admin"
+      ? 'https://backend-apps.ptspsi.co.id/api/kasbon'
+      : `https://backend-apps.ptspsi.co.id/api/kasbon-user/${user?.companies_users_id}`;
+
+      const response = await axios.get(endpoint, {
+        params: user?.roles[0].name === "admin"
+        ? { company_id: user.company_id }
+        : {},
         headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         }
       });
 
@@ -65,11 +71,11 @@ export default function DataKasbonPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [basicAuth]);
 
   useEffect(() => {
     fetchKasbons();
-  }, []);
+  }, [fetchKasbons]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

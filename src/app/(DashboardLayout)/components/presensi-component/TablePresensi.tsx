@@ -73,9 +73,11 @@ const TablePresensi: React.FC<TablePresensiProps> = ({
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>(''); 
   const theme = useTheme();
-  const router = useRouter();
 
-  // Cek dan set nilai rowsPerPage agar valid
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+  
   const validRowsPerPage = rowsPerPageOptions.includes(rowsPerPage) ? rowsPerPage : rowsPerPageOptions[0];
 
   if (loading) return <CircularProgress />;
@@ -89,7 +91,7 @@ const TablePresensi: React.FC<TablePresensiProps> = ({
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+            'Authorization': `Basic ${basicAuth}`
           },
         });
 
@@ -97,7 +99,7 @@ const TablePresensi: React.FC<TablePresensiProps> = ({
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+            'Authorization': `Basic ${basicAuth}`
           },
         });
 
@@ -145,7 +147,6 @@ const TablePresensi: React.FC<TablePresensiProps> = ({
     }, 1200);
   };
 
-  // Filter presensi by search term and date range
   const filteredPresensis = presensis.data.filter((presensi) => {
     const matchesSearch = presensi.companies_user?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStartDate = !startDate || new Date(presensi.tanggal) >= new Date(startDate);

@@ -81,6 +81,13 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
   const theme = useTheme();
   const router = useRouter();
 
+  const userCookie = Cookies.get('user');
+  const user = userCookie ? JSON.parse(userCookie) : null;
+  const isAdmin = user?.roles[0].name === "admin";
+
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
 
   if (loading) return <CircularProgress />;
   if (error) return <div>Error: {error}</div>;
@@ -93,7 +100,7 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+            'Authorization': `Basic ${basicAuth}`
           },
         });
   
@@ -186,7 +193,9 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
                 <TableCell sx={{ color: '#ffffff' }}>Category Izin</TableCell>
                 <TableCell sx={{ color: '#ffffff' }}>Status</TableCell>
                 <TableCell sx={{ color: '#ffffff' }}>Lampiran</TableCell>
-                <TableCell sx={{ color: '#ffffff' }}>Action</TableCell>
+                {isAdmin && (
+                  <TableCell sx={{ color: '#ffffff' }}>Action</TableCell>
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -218,14 +227,16 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
                         <AttachFileIcon />
                     </IconButton>
                   </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => { handleEdit(perizinan.id)}} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => {deleteEmployee(perizinan.id)}} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
+                  {isAdmin && (
+                    <TableCell>
+                      <IconButton onClick={() => { handleEdit(perizinan.id)}} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => {deleteEmployee(perizinan.id)}} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             ) : (

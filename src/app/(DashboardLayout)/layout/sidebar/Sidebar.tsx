@@ -1,7 +1,8 @@
 import { useMediaQuery, Box, Drawer, Typography } from "@mui/material";
 import SidebarItems from "./SidebarItems";
-import { Upgrade } from "./Updrade";
-import { Sidebar, Logo } from 'react-mui-sidebar';
+import { Sidebar } from 'react-mui-sidebar';
+import Image from 'next/image';
+
 
 interface ItemType {
   isMobileSidebarOpen: boolean;
@@ -73,7 +74,13 @@ const MSidebar = ({
               {/* Logo */}
               {/* ------------------------------------------- */}
               <Box sx={{ width: 200, height: '110px', marginTop: '-40px', justifyContent: 'center', }}>
-                <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%'}} />
+                <Image 
+                  src="/images/logos/my-abseni.png" 
+                  alt="My Absensi" 
+                  layout="responsive" 
+                  width={100}
+                  height={100}
+                />
               </Box>
               <Box>
                 {/* ------------------------------------------- */}
@@ -133,6 +140,7 @@ const MSidebar = ({
 
     </Drawer>
   );
+
 };
 
 export default MSidebar;

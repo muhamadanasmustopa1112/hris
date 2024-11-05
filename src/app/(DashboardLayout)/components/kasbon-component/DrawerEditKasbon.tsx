@@ -44,13 +44,18 @@ const DrawerEditKasbon: React.FC<DrawerEditKasbonProps> = ({ open, onClose, onSu
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
   useEffect(() => {
     const fetchKasbonData = async () => {
       if (open && kasbonId) {
         try {
           const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/kasbon/${kasbonId}`, {
             headers: {
-              'Authorization': `Bearer ${Cookies.get('token')}`,
+              'Authorization': `Basic ${basicAuth}`
             }
           });
           setCompanyUser(response.data.data.companies_user_id || ''); 
@@ -68,7 +73,7 @@ const DrawerEditKasbon: React.FC<DrawerEditKasbonProps> = ({ open, onClose, onSu
       }
     };
     fetchKasbonData();
-  }, [open, kasbonId]);
+  }, [open, kasbonId, basicAuth]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -78,7 +83,7 @@ const DrawerEditKasbon: React.FC<DrawerEditKasbonProps> = ({ open, onClose, onSu
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         },
         body: JSON.stringify({
           companies_users_id: companyUser,
@@ -134,7 +139,7 @@ const DrawerEditKasbon: React.FC<DrawerEditKasbonProps> = ({ open, onClose, onSu
       }
     };
     fetchEmployees();
-  }, []);
+  }, [basicAuth]);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);

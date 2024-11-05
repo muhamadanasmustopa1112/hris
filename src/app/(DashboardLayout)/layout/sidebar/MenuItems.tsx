@@ -8,7 +8,6 @@ import {
   IconFileDescription,
   IconFileDiff,
   IconLayoutDashboard,
-  IconTimeDuration60,
   IconUsers,
 } from "@tabler/icons-react";
 

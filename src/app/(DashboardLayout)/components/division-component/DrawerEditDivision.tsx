@@ -28,14 +28,18 @@ const DrawerEditDivision: React.FC<DrawerEditDivisionProps> = ({ open, onClose, 
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
-  
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
   useEffect(() => {
     const fetchDivisionData = async () => {
       if (open && divisionId) {
         try {
+        
           const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/division/${divisionId}`, {
             headers: {
-              'Authorization': `Bearer ${Cookies.get('token')}`,
+              'Authorization': `Basic ${basicAuth}`
             }
           });
           setDivisionName(response.data.data.name);
@@ -49,7 +53,7 @@ const DrawerEditDivision: React.FC<DrawerEditDivisionProps> = ({ open, onClose, 
     };
 
     fetchDivisionData();
-  }, [open, divisionId]);
+  }, [open, divisionId, basicAuth]);
 
   const handleEditDivision = async () => {
     if (divisionName.trim() === '') {
@@ -75,7 +79,7 @@ const DrawerEditDivision: React.FC<DrawerEditDivisionProps> = ({ open, onClose, 
           name: divisionName,
         }, {
           headers: {
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+            'Authorization': `Basic ${basicAuth}`
           }
         }
       );

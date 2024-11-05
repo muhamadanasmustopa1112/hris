@@ -32,6 +32,10 @@ const DrawerInputShift: React.FC<DrawerInputShiftProps> = ({ open, onClose, onSu
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
   const handleAddShift = async () => {
     if (shiftName.trim() === '') {
       setSnackbarMessage('Nama divisi tidak boleh kosong.');
@@ -59,7 +63,7 @@ const DrawerInputShift: React.FC<DrawerInputShiftProps> = ({ open, onClose, onSu
           company_id: user.company_id,
         }, {
           headers: {
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+             'Authorization': `Basic ${basicAuth}`
           }
         }
       );

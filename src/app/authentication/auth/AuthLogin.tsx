@@ -27,18 +27,29 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     setError("");
   
     try {
-      const response = await axios.post("https://backend-apps.ptspsi.co.id/api/login", {
-        email,
-        password,
-      });
-    
-     
-      if (response.data.user && response.data.token) {
-        Cookies.set("user", JSON.stringify(response.data.user), { expires: 1 });
-        Cookies.set("token", response.data.token, { expires: 1 });
 
+      const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+      const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+      const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
+      const response = await axios.post("https://backend-apps.ptspsi.co.id/api/login", {
+          email,
+          password,
+        }, {
+          headers: {
+            'Authorization': `Basic ${basicAuth}`
+          }
+        }
+      );
+    
+      if (response.data.user && response.data.token) {
+        Cookies.set("user", JSON.stringify(response.data.user), { expires: 3 / 24 });
+        Cookies.set("token", response.data.token, { expires: 3 / 24 });
         
-        router.push("/");
+        const redirectPath = response.data.user.roles[0].name === "admin" ? "/" : "/lembur";
+        router.push(redirectPath);
+
       } else {
         setError("Login failed. Please check your credentials.");
       }

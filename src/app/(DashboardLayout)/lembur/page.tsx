@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Breadcrumbs, Link } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -17,37 +17,37 @@ interface Lembur {
     jam: string;
     description: string;
     status: string;
-  }
-  
-
+}
 export default function DataLemburPage() {
   const [lemburs, setLemburs] = useState<Lembur[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-
+  const userCookie = Cookies.get('user');
+  const user = userCookie ? JSON.parse(userCookie) : null;
   const router = useRouter();
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
 
-  const fetchLemburs = async () => {
-
-    const userCookie = Cookies.get('user');
-    const user = userCookie ? JSON.parse(userCookie) : null;
-
+  const fetchLemburs = useCallback(async () => {
     if (!user || !user.company_id) {
         alert("DATA NOT FOUND!");
       return;
     }
     
     try {
-      
-      const response = await axios.get('https://backend-apps.ptspsi.co.id/api/lembur', {
-        params: {
-          company_id: user.company_id,
-        },
-        headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+      const endpoint = user?.roles[0].name === "admin"
+      ? 'https://backend-apps.ptspsi.co.id/api/lembur'
+      : `https://backend-apps.ptspsi.co.id/api/lembur-user/${user?.companies_users_id}`;
 
+      const response = await axios.get(endpoint, {
+        params: user?.roles[0].name === "admin"
+          ? { company_id: user.company_id }
+          : {},
+        headers: {
+          'Authorization': `Basic ${basicAuth}`
         }
       });
 
@@ -65,11 +65,11 @@ export default function DataLemburPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [basicAuth, user]);
 
   useEffect(() => {
     fetchLemburs();
-  }, []);
+  }, [fetchLemburs]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

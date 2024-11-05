@@ -2,13 +2,14 @@
 import Link from "next/link";
 import { Grid, Box, Card, Stack, Typography } from "@mui/material";
 // components
-// import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
-import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
+import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
+import Image from 'next/image';
+
 import AuthLogin from "../auth/AuthLogin";
 
-const Login2 = () => {
+const Login = () => {
   return (
-    // <PageContainer title="Login" description="this is Login page">
+    <PageContainer title="Login" description="">
       <Box
         sx={{
           position: "relative",
@@ -45,7 +46,13 @@ const Login2 = () => {
               sx={{ p: 4, zIndex: 1, width: "100%", maxWidth: "500px" }}
             >
               <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
-                <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%', marginTop: '-100px', marginBottom: '-150px'}} />
+                {/* <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%', marginTop: '-100px', marginBottom: '-150px'}} /> */}
+                <Image 
+                  src="/images/logos/my-abseni.png" 
+                  alt="My Absensi" 
+                  layout="responsive" 
+                  style={{ width: '100%', marginTop: '-100px', marginBottom: '-150px'}}
+                />
               </Box>
               <AuthLogin
                 subtext={
@@ -90,7 +97,7 @@ const Login2 = () => {
           </Grid>
         </Grid>
       </Box>
-    // </PageContainer>
+    </PageContainer>
   );
 };
-export default Login2;
+export default Login;

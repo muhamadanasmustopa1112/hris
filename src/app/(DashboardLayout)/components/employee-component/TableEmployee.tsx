@@ -68,6 +68,10 @@ const TableEmployee: React.FC<TableEmployeeProps> = ({
   const theme = useTheme();
   const router = useRouter();
 
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
 
   if (loading) return <CircularProgress />;
   if (error) return <div>Error: {error}</div>;
@@ -80,7 +84,7 @@ const TableEmployee: React.FC<TableEmployeeProps> = ({
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+            'Authorization': `Basic ${basicAuth}`,
           },
         });
   
@@ -187,7 +191,7 @@ const TableEmployee: React.FC<TableEmployeeProps> = ({
                     <TableCell>{employee.no_hp}</TableCell>
                     <TableCell>{employee.email}</TableCell>
                     <TableCell>
-                      <img src={employee.qr_code} alt="QR Code" style={{ width: '100px', height: '100px' }} />
+                      <img src={employee.qr_code} style={{ width: '100px', height: '100px' }} alt="QR Code" />
                     </TableCell>
                     <TableCell>
                       <IconButton onClick={() => { handleEdit(employee.id)}} color="primary">

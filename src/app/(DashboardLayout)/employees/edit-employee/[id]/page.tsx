@@ -1,10 +1,21 @@
 'use client';
-import React from 'react'; // Import React
+import React, { useEffect } from 'react'; // Import React
 import EditEmployee from '@/app/(DashboardLayout)/components/employee-component/EditEmployee';
 import { Breadcrumbs, Link, Typography } from '@mui/material';
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
-const EditEmployeePage: React.FC = () => { // Correctly define the component
+const EditEmployeePage: React.FC = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const userCookie = Cookies.get('user');
+    const user = userCookie ? JSON.parse(userCookie) : null;
+  
+    if (user?.roles[0]?.name !== "admin") {
+      router.replace('/404');
+    }
+  }, [router]);
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: '50px' }}>

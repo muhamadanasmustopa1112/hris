@@ -43,13 +43,18 @@ const DrawerEditLembur: React.FC<DrawerEditLemburProps> = ({ open, onClose, onSu
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
   useEffect(() => {
     const fetchLemburData = async () => {
       if (open && lemburId) {
         try {
-          const response = await axios.get(`hhttps://backend-apps.ptspsi.co.id/api/lembur/${lemburId}`, {
+          const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/lembur/${lemburId}`, {
             headers: {
-              'Authorization': `Bearer ${Cookies.get('token')}`,
+              'Authorization': `Basic ${basicAuth}`
             }
           });
           setCompanyUser(response.data.data.companies_user_id || ''); 
@@ -66,7 +71,7 @@ const DrawerEditLembur: React.FC<DrawerEditLemburProps> = ({ open, onClose, onSu
       }
     };
     fetchLemburData();
-  }, [open, lemburId]);
+  }, [open, lemburId, basicAuth]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -76,7 +81,7 @@ const DrawerEditLembur: React.FC<DrawerEditLemburProps> = ({ open, onClose, onSu
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         },
         body: JSON.stringify({
           companies_users_id: companyUser,
@@ -114,7 +119,10 @@ const DrawerEditLembur: React.FC<DrawerEditLemburProps> = ({ open, onClose, onSu
     const fetchEmployees = async () => {
       setLoading(true);
       try {
-        const response = await fetch('/api/get-employee');
+        const response = await fetch('/api/get-employee', {
+          method: 'GET',
+          credentials: 'include',
+        });        
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -131,7 +139,7 @@ const DrawerEditLembur: React.FC<DrawerEditLemburProps> = ({ open, onClose, onSu
       }
     };
     fetchEmployees();
-  }, []);
+  }, [basicAuth]);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);

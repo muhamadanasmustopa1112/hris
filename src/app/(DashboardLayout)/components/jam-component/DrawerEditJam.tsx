@@ -42,6 +42,11 @@ const DrawerEditJam: React.FC<DrawerEditJamProps> = ({ open, onClose, onSuccess,
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
   useEffect(() => {
     const fetchJamdata = async () => {
       if (open && jamId) {
@@ -63,7 +68,7 @@ const DrawerEditJam: React.FC<DrawerEditJamProps> = ({ open, onClose, onSuccess,
       }
     };
     fetchJamdata();
-  }, [open, jamId]);
+  }, [open, jamId, basicAuth]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -73,7 +78,7 @@ const DrawerEditJam: React.FC<DrawerEditJamProps> = ({ open, onClose, onSuccess,
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         },
         body: JSON.stringify({
           shift_id: shiftId,
@@ -124,7 +129,7 @@ const DrawerEditJam: React.FC<DrawerEditJamProps> = ({ open, onClose, onSuccess,
               company_id: user.company_id,
             },
             headers: {
-              'Authorization': `Bearer ${Cookies.get('token')}`,
+              'Authorization': `Basic ${basicAuth}`
             }
         });
 
@@ -144,7 +149,7 @@ const DrawerEditJam: React.FC<DrawerEditJamProps> = ({ open, onClose, onSuccess,
         }
     };
     fetchShifts();
-  }, []);
+  }, [basicAuth]);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);

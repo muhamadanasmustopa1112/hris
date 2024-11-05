@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Breadcrumbs, Link } from '@mui/material';
 import axios from 'axios';
 import TableDivision from '../components/division-component/TableDivision';
@@ -21,27 +21,37 @@ export default function DataDivisionPage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-
   const router = useRouter();
 
-  const fetchDivisions = async () => {
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
 
+  useEffect(() => {
+    const userCookie = Cookies.get('user');
+    const user = userCookie ? JSON.parse(userCookie) : null;
+
+    if (user?.roles[0]?.name !== "admin") {
+      router.replace('/404');
+    }
+  }, [router]);
+  
+  const fetchDivisions = useCallback(async () => {
     const userCookie = Cookies.get('user');
     const user = userCookie ? JSON.parse(userCookie) : null;
 
     if (!user || !user.company_id) {
-        alert("DATA NOT FOUND!");
+      alert("DATA NOT FOUND!");
       return;
     }
-    
+
     try {
-      
       const response = await axios.get('https://backend-apps.ptspsi.co.id/api/division', {
         params: {
           company_id: user.company_id,
         },
         headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         }
       });
 
@@ -59,11 +69,11 @@ export default function DataDivisionPage() {
     } finally {
       setLoading(false);
     }
-  };
-
+  }, [basicAuth]);
+  
   useEffect(() => {
     fetchDivisions();
-  }, []);
+  }, [fetchDivisions]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

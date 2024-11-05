@@ -61,6 +61,11 @@ const EmployeeInput: React.FC = () => {
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
   const router = useRouter();
 
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
   useEffect(() => {
     const fetchDivisions = async () => {
 
@@ -79,7 +84,7 @@ const EmployeeInput: React.FC = () => {
             company_id: user.company_id,
           },
           headers: {
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+            'Authorization': `Basic ${basicAuth}`,
           },
         });
 
@@ -94,7 +99,7 @@ const EmployeeInput: React.FC = () => {
     };
 
     fetchDivisions();
-  }, []);
+  }, [basicAuth]);
 
   useEffect(() => {
     const fetchJabatans = async () => {
@@ -114,7 +119,7 @@ const EmployeeInput: React.FC = () => {
             company_id: user.company_id,
           },
           headers: {
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+            'Authorization': `Basic ${basicAuth}`,
           },
         });
 
@@ -129,7 +134,7 @@ const EmployeeInput: React.FC = () => {
     };
 
     fetchJabatans();
-  }, []);
+  }, [basicAuth]);
 
    useEffect(() => {
     const userCookie = Cookies.get('user');
@@ -155,7 +160,7 @@ const EmployeeInput: React.FC = () => {
     } else {
       console.log('Cookie user tidak ditemukan');
     }
-  }, []);
+  }, [basicAuth]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, type } = e.target;
@@ -194,7 +199,7 @@ const EmployeeInput: React.FC = () => {
       const response = await axios.post('https://backend-apps.ptspsi.co.id/api/create-company-user', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`,
         },
       });
       console.log('Employee created:', response);

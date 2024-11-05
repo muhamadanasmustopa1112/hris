@@ -9,9 +9,6 @@ interface Props {
 
 const PageContainer = ({ title, description, children }: Props) => {
   
-  console.log("PageContainer title:", title);
-  console.log("PageContainer description:", description);
-
   return (
     <HelmetProvider>
       <div>

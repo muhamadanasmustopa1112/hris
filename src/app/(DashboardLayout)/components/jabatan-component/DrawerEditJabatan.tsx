@@ -28,6 +28,10 @@ const DrawerEditJabatan: React.FC<DrawerEditJabatanProps> = ({ open, onClose, on
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
   
   useEffect(() => {
     const fetchJabatanData = async () => {
@@ -35,7 +39,7 @@ const DrawerEditJabatan: React.FC<DrawerEditJabatanProps> = ({ open, onClose, on
         try {
           const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/jabatan/${jabatanId}`, {
             headers: {
-              'Authorization': `Bearer ${Cookies.get('token')}`,
+              'Authorization': `Basic ${basicAuth}`
             }
           });
           setJabatanName(response.data.data.name);
@@ -49,7 +53,7 @@ const DrawerEditJabatan: React.FC<DrawerEditJabatanProps> = ({ open, onClose, on
     };
 
     fetchJabatanData();
-  }, [open, jabatanId]);
+  }, [open, jabatanId, basicAuth]);
 
   const handleEditDivision = async () => {
     if (jabatanName.trim() === '') {
@@ -75,7 +79,7 @@ const DrawerEditJabatan: React.FC<DrawerEditJabatanProps> = ({ open, onClose, on
           name: jabatanName,
         }, {
           headers: {
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+            'Authorization': `Basic ${basicAuth}`
           }
         }
       );

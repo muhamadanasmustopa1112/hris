@@ -82,6 +82,14 @@ import Cookies from 'js-cookie';
 
     const [searchTerm, setSearchTerm] = useState<string>('');
     const theme = useTheme();
+
+    const userCookie = Cookies.get('user');
+    const user = userCookie ? JSON.parse(userCookie) : null;
+    const isAdmin = user?.roles[0].name === "admin";
+  
+    const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+    const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+    const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
   
     if (loading) return <CircularProgress />;
     if (error) return <div>Error: {error}</div>;
@@ -94,7 +102,7 @@ import Cookies from 'js-cookie';
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${Cookies.get('token')}`,
+              'Authorization': `Basic ${basicAuth}`
             },
           });
   
@@ -190,7 +198,9 @@ import Cookies from 'js-cookie';
                   <StyledTableCell sx={{ color: '#ffffff' }}>Tenor (Bulan)</StyledTableCell>
                   <StyledTableCell sx={{ color: '#ffffff' }}>Keterangan</StyledTableCell>
                   <StyledTableCell sx={{ color: '#ffffff' }}>Status</StyledTableCell>
-                  <StyledTableCell sx={{ color: '#ffffff' }}>Action</StyledTableCell>
+                  {isAdmin && (
+                    <StyledTableCell sx={{ color: '#ffffff' }}>Action</StyledTableCell>
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -204,24 +214,26 @@ import Cookies from 'js-cookie';
                       <StyledTableCell>{kasbon.tenor}</StyledTableCell>
                       <StyledTableCell>{kasbon.keterangan}</StyledTableCell>
                       <StyledTableCell >
-                      {kasbon.status === 'Success' && (
-                      <Alert variant="filled" severity="success" style={{ color: 'white' }}>{kasbon.status}</Alert>
+                        {kasbon.status === 'Success' && (
+                        <Alert variant="filled" severity="success" style={{ color: 'white' }}>{kasbon.status}</Alert>
+                        )}
+                        {kasbon.status === 'Decline' && (
+                        <Alert variant="filled" severity="error" style={{ color: 'white' }}>{kasbon.status}</Alert>
+                        )}
+                        {kasbon.status === 'On Prosses' && (
+                        <Alert variant="filled" severity="info" style={{ color: 'white' }}>{kasbon.status}</Alert>
+                        )}
+                      </StyledTableCell> 
+                      {isAdmin && (                   
+                        <StyledTableCell>
+                          <IconButton onClick={() => handleEdit(kasbon.id)} color="primary">
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton onClick={() => deleteKasbon(kasbon.id)} color="error">
+                            <DeleteIcon />
+                          </IconButton>
+                        </StyledTableCell>
                       )}
-                      {kasbon.status === 'Decline' && (
-                      <Alert variant="filled" severity="error" style={{ color: 'white' }}>{kasbon.status}</Alert>
-                      )}
-                      {kasbon.status === 'On Prosses' && (
-                      <Alert variant="filled" severity="info" style={{ color: 'white' }}>{kasbon.status}</Alert>
-                      )}
-                    </StyledTableCell>                    
-                    <StyledTableCell>
-                        <IconButton onClick={() => handleEdit(kasbon.id)} color="primary">
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => deleteKasbon(kasbon.id)} color="error">
-                          <DeleteIcon />
-                        </IconButton>
-                      </StyledTableCell>
                     </StyledTableRow>
                   ))
                 ) : (

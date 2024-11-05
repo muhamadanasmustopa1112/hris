@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import {
   TextField, Button, Select, MenuItem, InputLabel, FormControl, Box, Grid, CircularProgress,
   Typography,
@@ -42,6 +42,14 @@ const PerizinanInput: React.FC = () => {
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
   const router = useRouter();
 
+  const userCookie = Cookies.get('user');
+  const user = userCookie ? JSON.parse(userCookie) : null;
+  const isAdmin = user?.roles[0].name === "admin";
+
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
   const [formData, setFormData] = useState<{ [key: string]: any }>({
     jenis_izin_id: '',
     category_id: '',
@@ -55,10 +63,24 @@ const PerizinanInput: React.FC = () => {
     lampiran: null,
   });
 
+  
+  useEffect(() => {
+    if (!isAdmin) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        status: 'On Prosses',
+        companies_users_id: user?.companies_users_id,
+      }));
+    }
+  }, [isAdmin, user?.companies_users_id, basicAuth]);
 
+  
   const fetchEmployees = async () => {
     try {
-      const response = await fetch('/api/get-employee');
+      const response = await fetch('/api/get-employee', {
+        method: 'GET',
+        credentials: 'include',
+      });      
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -76,11 +98,11 @@ const PerizinanInput: React.FC = () => {
     }
   };
 
-  const fetchJenisIzin = async () => {
+  const fetchJenisIzin = useCallback(async () => {
     try {
       const response = await axios.get('https://backend-apps.ptspsi.co.id/api/jenis-izin', {
-        headers:{
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+        headers: {
+          'Authorization': `Basic ${basicAuth}`
         }
       });
       if (Array.isArray(response.data.data)) {
@@ -91,31 +113,30 @@ const PerizinanInput: React.FC = () => {
     } catch (error) {
       console.error('Error fetching divisions:', error);
     }
-  };
+  }, [basicAuth]);
 
-  const fetchCategory = async () => {
+  const fetchCategory = useCallback(async () => {
     try {
       const response = await axios.get('https://backend-apps.ptspsi.co.id/api/category-izin', {
         headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         }
       });
       if (Array.isArray(response.data.data)) {
-          setCategory(response.data.data);
+        setCategory(response.data.data);
       } else {
         console.error('Expected an array, but got:', typeof response.data);
       }
     } catch (error) {
       console.error('Error fetching divisions:', error);
     }
-  };
+  }, [basicAuth]);
 
   useEffect(() => {
     fetchJenisIzin();
     fetchCategory();
     fetchEmployees();
-  }, []);
-
+  }, [basicAuth, fetchJenisIzin, fetchCategory]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -178,7 +199,7 @@ const PerizinanInput: React.FC = () => {
       const response = await axios.post('https://backend-apps.ptspsi.co.id/api/perizinan', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         },
       });
 
@@ -267,22 +288,24 @@ const PerizinanInput: React.FC = () => {
             </FormControl>
         </Grid>
       </Grid>
-      <FormControl variant="outlined" fullWidth required>
-        <InputLabel>Employee</InputLabel>
-        <Select
-            name="companies_users_id"
-            value={formData.companies_users_id}
-            onChange={handleSelectChange}
-            label="Employee"
-        >
-            <MenuItem value=""><em>Select Companies User</em></MenuItem>
-            {employees.map((employee) => (
-            <MenuItem key={employee.id} value={employee.id}>
-                {employee.name}
-            </MenuItem>
-            ))}
-        </Select>
-      </FormControl>
+      {isAdmin && (
+        <FormControl variant="outlined" fullWidth required>
+          <InputLabel>Employee</InputLabel>
+          <Select
+              name="companies_users_id"
+              value={formData.companies_users_id}
+              onChange={handleSelectChange}
+              label="Employee"
+          >
+              <MenuItem value=""><em>Select Companies User</em></MenuItem>
+              {employees.map((employee) => (
+              <MenuItem key={employee.id} value={employee.id}>
+                  {employee.name}
+              </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
+      )}
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <TextField
@@ -353,20 +376,22 @@ const PerizinanInput: React.FC = () => {
         multiline
         rows={3}
       />
-      <FormControl  variant="outlined" fullWidth required>
-        <InputLabel>Status</InputLabel>
-        <Select
-          name="status"
-          value={formData.status}
-          onChange={handleSelectChange}
-          label="Employee"
-        >
-          <MenuItem value=""><em>Select Status</em></MenuItem>
-          <MenuItem value="Success">Success</MenuItem>
-          <MenuItem value="Decline">Decline</MenuItem>
-          <MenuItem value="On Prosses">On Prosses</MenuItem>
-        </Select>
-      </FormControl>
+      {isAdmin && (
+        <FormControl  variant="outlined" fullWidth required>
+          <InputLabel>Status</InputLabel>
+          <Select
+            name="status"
+            value={formData.status}
+            onChange={handleSelectChange}
+            label="Employee"
+          >
+            <MenuItem value=""><em>Select Status</em></MenuItem>
+            <MenuItem value="Success">Success</MenuItem>
+            <MenuItem value="Decline">Decline</MenuItem>
+            <MenuItem value="On Prosses">On Prosses</MenuItem>
+          </Select>
+        </FormControl>
+      )}
       <div {...getRootProps()} style={{
         border: '2px dashed gray',
         padding: '20px',

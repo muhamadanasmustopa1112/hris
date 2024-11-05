@@ -64,11 +64,19 @@ const FormPresensiMasuk: React.FC<FormPresensiMasukProps> = ({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+    const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  
+    const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
     useEffect(() => {
         const fetchEmployees = async () => {
           setLoading(true);
           try {
-            const response = await fetch('/api/get-employee');
+            const response = await fetch('/api/get-employee', {
+                method: 'GET',
+                credentials: 'include',
+            });
             if (!response.ok) {
               throw new Error('Network response was not ok');
             }
@@ -85,7 +93,7 @@ const FormPresensiMasuk: React.FC<FormPresensiMasukProps> = ({
           }
         };
         fetchEmployees();
-    }, []);
+    }, [basicAuth]);
 
     useEffect(() => {
         const fetchShifts = async () => {
@@ -106,7 +114,7 @@ const FormPresensiMasuk: React.FC<FormPresensiMasukProps> = ({
                     company_id: user.company_id,
                 },
                 headers: {
-                    'Authorization': `Bearer ${Cookies.get('token')}`,
+                    'Authorization': `Basic ${basicAuth}`
                 }
             });
     
@@ -126,7 +134,7 @@ const FormPresensiMasuk: React.FC<FormPresensiMasukProps> = ({
             }
         };
         fetchShifts();
-    }, []);
+    }, [basicAuth]);
 
 
     return (

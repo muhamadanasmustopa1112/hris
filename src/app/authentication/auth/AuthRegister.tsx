@@ -27,18 +27,28 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
         setError("");
       
         try {
+
+          const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+          const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+      
+          const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64"); 
+
           const response = await axios.post("https://backend-apps.ptspsi.co.id/api/create-company", {
             company_name: name,
             user_name: userName,
             email: email,
             password: password,
             password_confirmation: passwordConfirmation,
-          });
+        }, {
+            headers: {
+                'Authorization': `Basic ${basicAuth}`
+            }   
+        });
 
           if (response.status == 201) {
             router.push("/authentication/login");
           } else {
-            setError("Login failed. Please check your credentials.");
+            setError("Register failed. Please check your credentials.");
           }
       
         } catch (err) {

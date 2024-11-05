@@ -40,6 +40,11 @@ const DrawerInputJam: React.FC<DrawerInputJamtProps> = ({ open, onClose, onSucce
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
   const handleAddJam = async () => {
 
     const userCookie = Cookies.get('user');
@@ -61,7 +66,7 @@ const DrawerInputJam: React.FC<DrawerInputJamtProps> = ({ open, onClose, onSucce
           jam_keluar: jamKeluar,
         }, {
           headers: {
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+            'Authorization': `Basic ${basicAuth}`
           }
         }
       );
@@ -104,7 +109,7 @@ const DrawerInputJam: React.FC<DrawerInputJamtProps> = ({ open, onClose, onSucce
             company_id: user.company_id,
             },
             headers: {
-              'Authorization': `Bearer ${Cookies.get('token')}`,
+              'Authorization': `Basic ${basicAuth}`
             }
         });
 
@@ -124,7 +129,7 @@ const DrawerInputJam: React.FC<DrawerInputJamtProps> = ({ open, onClose, onSucce
         }
     };
     fetchShifts();
-  }, []);
+  }, [basicAuth]);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);

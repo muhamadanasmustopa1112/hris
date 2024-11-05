@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Breadcrumbs, Link, TableHead, TableRow } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -23,7 +23,20 @@ export default function JabatanPage() {
 
   const router = useRouter();
 
-  const fetchJabatans = async () => {
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
+  useEffect(() => {
+    const userCookie = Cookies.get('user');
+    const user = userCookie ? JSON.parse(userCookie) : null;
+
+    if (user?.roles[0]?.name !== "admin") {
+      router.replace('/404');
+    }
+  }, [router]);
+  
+  const fetchJabatans = useCallback(async () => {
     const userCookie = Cookies.get('user');
     const user = userCookie ? JSON.parse(userCookie) : null;
 
@@ -38,7 +51,7 @@ export default function JabatanPage() {
           company_id: user.company_id,
         },
         headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         }
       });
 
@@ -56,11 +69,11 @@ export default function JabatanPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [basicAuth]);
 
   useEffect(() => {
     fetchJabatans();
-  }, []);
+  }, [fetchJabatans]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

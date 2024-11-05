@@ -1,4 +1,5 @@
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
     Button,
@@ -20,7 +21,7 @@ import { Image, CloudUpload } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 
 const EditEmployee: React.FC = () => {
-    const { id } = useParams(); 
+    const { id } = useParams<{ id: string }>();
 
     const [employeeData, setEmployeeData] = useState<any>(null);
     const [formData, setFormData] = useState<{ [key: string]: any }>({
@@ -57,6 +58,11 @@ const EditEmployee: React.FC = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const router = useRouter();
 
+    const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+    const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  
+    const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+  
     useEffect(() => {
         const fetchDivisions = async () => {
 
@@ -75,7 +81,7 @@ const EditEmployee: React.FC = () => {
                       company_id: user.company_id,
                     },
                     headers: {
-                        'Authorization': `Bearer ${Cookies.get('token')}`,
+                        'Authorization': `Basic ${basicAuth}`
                     },
                 });
 
@@ -90,7 +96,7 @@ const EditEmployee: React.FC = () => {
         };
 
         fetchDivisions();
-    }, []);
+    }, [basicAuth]);
 
     useEffect(() => {
         const fetchJabatans = async () => {
@@ -110,7 +116,7 @@ const EditEmployee: React.FC = () => {
                   company_id: user.company_id,
                 },
                 headers: {
-                    'Authorization': `Bearer ${Cookies.get('token')}`,
+                    'Authorization': `Basic ${basicAuth}`
                 },
             });
     
@@ -125,7 +131,7 @@ const EditEmployee: React.FC = () => {
         };
     
         fetchJabatans();
-      }, []);
+      }, [basicAuth]);
 
       useEffect(() => {
         if (id) {
@@ -134,7 +140,7 @@ const EditEmployee: React.FC = () => {
                     const response = await fetch(`https://backend-apps.ptspsi.co.id/api/company-user/${id}`,{
                         method: 'GET',
                         headers: {
-                            'Authorization': `Bearer ${Cookies.get('token')}`,
+                            'Authorization': `Basic ${basicAuth}`,
                             'Content-Type': 'application/json',
                         },
                     });
@@ -172,7 +178,7 @@ const EditEmployee: React.FC = () => {
             };
             fetchEmployeeDetails();
         }
-    }, [id, divisions]);
+    }, [id, divisions, basicAuth]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
@@ -219,8 +225,7 @@ const EditEmployee: React.FC = () => {
             const response = await axios.post(`https://backend-apps.ptspsi.co.id/api/company-user/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${Cookies.get('token')}`,
-
+                    'Authorization': `Basic ${basicAuth}`,
                 }
             });
             console.log(formData);

@@ -41,6 +41,14 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
+  const userCookie = Cookies.get('user');
+  const user = userCookie ? JSON.parse(userCookie) : null;
+  const isAdmin = user?.roles[0].name === "admin";
+
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
   const handleSubmit = async () => {
     setLoading(true);
     setSnackbarOpen(false);
@@ -49,14 +57,14 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+           'Authorization': `Basic ${basicAuth}`
         },
         body: JSON.stringify({
-          companies_users_id: companyUser,
+          companies_users_id: user?.roles[0].name === "admin" ? companyUser : user?.companies_users_id,  
           tanggal: tanggal,
           jam: jam,
           description: description,
-          status: status,
+          status:  user?.roles[0].name === "admin" ? status : "On Prosses",
         }),
       });
 
@@ -86,7 +94,10 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
     const fetchEmployees = async () => {
       setLoading(true);
       try {
-        const response = await fetch('/api/get-employee');
+        const response = await fetch('/api/get-employee', {
+          method: 'GET',
+          credentials: 'include',
+        });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -103,7 +114,7 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
       }
     };
     fetchEmployees();
-  }, []);
+  }, [basicAuth]);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -119,22 +130,23 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
               <CloseIcon />
             </IconButton>
           </Box>
-
-          <FormControl fullWidth margin="normal">
-            <InputLabel id="select-company-user-label">Name</InputLabel>
-            <Select
-              labelId="select-company-user-label"
-              value={companyUser}
-              label="Name"
-              onChange={(e) => setCompanyUser(e.target.value)}
-            >
-              {employees.map((user) => (
-                <MenuItem key={user.id} value={user.id}>
-                  {user.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {isAdmin && (
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="select-company-user-label">Name</InputLabel>
+              <Select
+                labelId="select-company-user-label"
+                value={companyUser}
+                label="Name"
+                onChange={(e) => setCompanyUser(e.target.value)}
+              >
+                {employees.map((user) => (
+                  <MenuItem key={user.id} value={user.id}>
+                    {user.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
           <TextField
             label="Tanggal"
             type="date"
@@ -160,20 +172,21 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
             onChange={(e) => setDescription(e.target.value)}
             margin="normal"
           />
-          <FormControl fullWidth margin="normal">
-            <InputLabel id="select-status-label">Status</InputLabel>
-            <Select
-              labelId="select-status-label"
-              value={status}
-              label="Status"
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <MenuItem value="On Prosses">On Prosses</MenuItem>
-              <MenuItem value="Success">Success</MenuItem>
-              <MenuItem value="Decline">Decline</MenuItem>
-            </Select>
-          </FormControl>
-
+          {isAdmin && (
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="select-status-label">Status</InputLabel>
+              <Select
+                labelId="select-status-label"
+                value={status}
+                label="Status"
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <MenuItem value="On Prosses">On Prosses</MenuItem>
+                <MenuItem value="Success">Success</MenuItem>
+                <MenuItem value="Decline">Decline</MenuItem>
+              </Select>
+            </FormControl>
+          )}
           <Box mt={2} display="flex" justifyContent="flex-end">
             <Button
               variant="contained"

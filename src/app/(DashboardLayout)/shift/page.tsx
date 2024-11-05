@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Breadcrumbs, Link } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -22,10 +22,21 @@ export default function DataShiftPage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
   const router = useRouter();
 
-  const fetchShifts = async () => {
+  useEffect(() => {
+    const userCookie = Cookies.get('user');
+    const user = userCookie ? JSON.parse(userCookie) : null;
+
+    if (user?.roles[0]?.name !== "admin") {
+      router.replace('/404');
+    }
+  }, [router]);
+  
+  const fetchShifts = useCallback(async () => {
 
     const userCookie = Cookies.get('user');
     const user = userCookie ? JSON.parse(userCookie) : null;
@@ -42,7 +53,7 @@ export default function DataShiftPage() {
           company_id: user.company_id,
         },
         headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         }
       });
 
@@ -60,11 +71,11 @@ export default function DataShiftPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [basicAuth]);
 
   useEffect(() => {
     fetchShifts();
-  }, []);
+  }, [fetchShifts]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

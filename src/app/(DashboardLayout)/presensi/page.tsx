@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Breadcrumbs, Link } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -26,18 +26,27 @@ interface Presensi {
   alamat: string;
   
 }
-  
-
 export default function DataPresensiPage() {
   const [presensis, setPresensis] = useState<Presensi[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
   const router = useRouter();
 
-  const fetchPresensis = async () => {
+  useEffect(() => {
+    const userCookie = Cookies.get('user');
+    const user = userCookie ? JSON.parse(userCookie) : null;
+
+    if (user?.roles[0]?.name !== "admin") {
+      router.replace('/404');
+    }
+  }, [router]);
+  
+  const fetchPresensis = useCallback(async () => {
 
     const userCookie = Cookies.get('user');
     const user = userCookie ? JSON.parse(userCookie) : null;
@@ -54,14 +63,10 @@ export default function DataPresensiPage() {
           company_id: user.company_id,
         },
         headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         }
       });
-
-      
-      let allPresensis: any[] = [];
-
-    
+      let allPresensis: any[] = [];    
       response.data.data.forEach((entry: any) => {
         
         if (Array.isArray(entry.data)) {
@@ -74,14 +79,10 @@ export default function DataPresensiPage() {
           });
         }
       });
-
-      
       setPresensis(allPresensis);
-
       if (allPresensis.length === 0) {
         console.error('No presensi data found.');
       }
-
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -91,11 +92,11 @@ export default function DataPresensiPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [basicAuth]);
 
   useEffect(() => {
     fetchPresensis();
-  }, []);
+  }, [fetchPresensis]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

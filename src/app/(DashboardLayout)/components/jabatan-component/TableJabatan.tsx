@@ -80,6 +80,11 @@ import Cookies from 'js-cookie';
     const [searchTerm, setSearchTerm] = useState<string>('');
     const theme = useTheme();
   
+    const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+    const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+    const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
     if (loading) return <CircularProgress />;
     if (error) return <div>Error: {error}</div>;
   
@@ -91,7 +96,7 @@ import Cookies from 'js-cookie';
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${Cookies.get('token')}`,
+              'Authorization': `Basic ${basicAuth}`
             },
           });
   

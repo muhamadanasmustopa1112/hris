@@ -1,10 +1,21 @@
 'use client';
-import React from 'react'; // Import React
+import React, { useEffect } from 'react';
 import EmployeeInput from '../../components/employee-component/EmployeeInput';
 import { Breadcrumbs, Link, Typography } from '@mui/material';
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const InputEmployeePage: React.FC = () => { 
+  const router = useRouter();
+
+  useEffect(() => {
+    const userCookie = Cookies.get('user');
+    const user = userCookie ? JSON.parse(userCookie) : null;
+  
+    if (user?.roles[0]?.name !== "admin") {
+      router.replace('/404');
+    }
+  }, [router]);
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: '50px' }}>

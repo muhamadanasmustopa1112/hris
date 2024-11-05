@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import {
   TextField, Button, Select, MenuItem, InputLabel, FormControl, Box, Grid, CircularProgress,
   Typography,
@@ -9,7 +9,9 @@ import {
 import { SelectChangeEvent } from '@mui/material/Select';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useParams } from 'react-router-dom';
+
 import Cookies from 'js-cookie';
 
 
@@ -29,7 +31,7 @@ interface Employee {
 
 const PerizinanEdit: React.FC = () => {
 
-  const { id } = useParams(); 
+  const { id } = useParams<{ id: string }>();
   const [perizinanData, setPerizinanData] = useState<any>(null);
   const [jenis_izins, setJenisIzins] = useState<JenisIzin[]>([]);
   const [categorys, setCategory] = useState<Category[]>([]);
@@ -43,6 +45,11 @@ const PerizinanEdit: React.FC = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
   const router = useRouter();
+
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
 
   const [formData, setFormData] = useState<{ [key: string]: any }>({
     _method: 'PUT',
@@ -62,7 +69,10 @@ const PerizinanEdit: React.FC = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await fetch('/api/get-employee');
+      const response = await fetch('/api/get-employee', {
+        method: 'GET',
+        credentials: 'include', // Sertakan cookies dalam permintaan
+      });      
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -80,11 +90,11 @@ const PerizinanEdit: React.FC = () => {
     }
   };
 
-  const fetchJenisIzin = async () => {
+  const fetchJenisIzin = useCallback(async () => {
     try {
       const response = await axios.get('https://backend-apps.ptspsi.co.id/api/jenis-izin', {
         headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         }
       });
       if (Array.isArray(response.data.data)) {
@@ -95,30 +105,30 @@ const PerizinanEdit: React.FC = () => {
     } catch (error) {
       console.error('Error fetching divisions:', error);
     }
-  };
+  }, [basicAuth]);
 
-  const fetchCategory = async () => {
+  const fetchCategory = useCallback(async () => {
     try {
       const response = await axios.get('https://backend-apps.ptspsi.co.id/api/category-izin', {
         headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         }
       });
       if (Array.isArray(response.data.data)) {
-          setCategory(response.data.data);
+        setCategory(response.data.data);
       } else {
         console.error('Expected an array, but got:', typeof response.data);
       }
     } catch (error) {
       console.error('Error fetching divisions:', error);
     }
-  };
+  }, [basicAuth]);
 
   useEffect(() => {
     fetchJenisIzin();
     fetchCategory();
     fetchEmployees();
-  }, [id]);
+  }, [id, basicAuth, fetchJenisIzin, fetchCategory]);
   
   useEffect(() => {
     const fetchPerizinan = async () => {
@@ -126,7 +136,7 @@ const PerizinanEdit: React.FC = () => {
         try {
           const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/perizinan/${id}`, {
             headers: {
-              'Authorization': `Bearer ${Cookies.get('token')}`,
+              'Authorization': `Basic ${basicAuth}`
             }
           });
           const data = response.data.data;
@@ -154,7 +164,7 @@ const PerizinanEdit: React.FC = () => {
     };
 
     fetchPerizinan();
-  }, [id, employees]);
+  }, [id, employees, basicAuth]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -221,7 +231,7 @@ const PerizinanEdit: React.FC = () => {
       const response = await axios.post(`https://backend-apps.ptspsi.co.id/api/perizinan/${id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Basic ${basicAuth}`
         },
       });
 

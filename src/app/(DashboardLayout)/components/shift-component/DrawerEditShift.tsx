@@ -34,13 +34,17 @@ const DrawerEditShift: React.FC<DrawerEditShiftProps> = ({ open, onClose, onSucc
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
+  const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+  const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+
   useEffect(() => {
     const fetchShiftData = async () => {
       if (open && shiftId) {
         try {
           const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/shift/${shiftId}`, {
             headers: {
-              'Authorization': `Bearer ${Cookies.get('token')}`,
+              'Authorization': `Basic ${basicAuth}`
             }
           });
           setShiftName(response.data.data.name);
@@ -55,7 +59,7 @@ const DrawerEditShift: React.FC<DrawerEditShiftProps> = ({ open, onClose, onSucc
     };
 
     fetchShiftData();
-  }, [open, shiftId]);
+  }, [open, shiftId, basicAuth]);
   
 
   const handleEdiShift = async () => {
@@ -83,7 +87,7 @@ const DrawerEditShift: React.FC<DrawerEditShiftProps> = ({ open, onClose, onSucc
           status: status,
         }, {
           headers: {
-            'Authorization': `Bearer ${Cookies.get('token')}`,
+            'Authorization': `Basic ${basicAuth}`
           }
         }
       );

@@ -22,6 +22,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+      </head>
         <ThemeProvider theme={baselightTheme}>
           <CssBaseline />
           {children}

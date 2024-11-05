@@ -1,12 +1,12 @@
-// DataEmployeePage.tsx
 "use client";
 
 import { useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Breadcrumbs, Link } from '@mui/material';
 import TableEmployee from '../../components/employee-component/TableEmployee';
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
 import PageContainer from '../../components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
+import Cookies from 'js-cookie';
 
 interface Employee {
   id: number;
@@ -25,15 +25,28 @@ export default function DataEmployeePage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+  const router = useRouter();
 
+  useEffect(() => {
+    const userCookie = Cookies.get('user');
+    const user = userCookie ? JSON.parse(userCookie) : null;
+
+    if (user?.roles[0]?.name !== "admin") {
+      router.replace('/404');
+    }
+  }, [router]);
+  
   const fetchEmployees = async () => {
     try {
-      const response = await fetch('/api/get-employee');
+      const response = await fetch('/api/get-employee', {
+        method: 'GET',
+        credentials: 'include',
+      });
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      setEmployees(data.data); // Simpan data karyawan
+      setEmployees(data.data);
 
     } catch (error) {
       if (error instanceof Error) {
@@ -51,7 +64,7 @@ export default function DataEmployeePage() {
   }, []);
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    console.log("New Page:", newPage); // Tambahkan log ini
+    console.log("New Page:", newPage);
 
     setPage(newPage);
   };
@@ -64,11 +77,7 @@ export default function DataEmployeePage() {
   if (loading) return <CircularProgress />;
   if (error) return <div>Error: {error}</div>;
 
-  // Hitung total employees
   const totalEmployees = employees.length;
-
-  // Ambil karyawan yang difilter untuk ditampilkan
-  // const filteredEmployees = employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <PageContainer title="Manajemen Karyawan" description="Halaman untuk mengelola data karyawan">

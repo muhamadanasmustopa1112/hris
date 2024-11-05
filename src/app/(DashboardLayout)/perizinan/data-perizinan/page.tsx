@@ -1,4 +1,3 @@
-// DataEmployeePage.tsx
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -28,7 +27,7 @@ interface Perizinan {
     
   }
 
-export default function DataEmployeePage() {
+export default function DataPerizinanPage() {
   const [perizinans, setPerizinans] = useState<Perizinan[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +61,7 @@ export default function DataEmployeePage() {
 
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    console.log("New Page:", newPage); // Tambahkan log ini
+    console.log("New Page:", newPage);
 
     setPage(newPage);
   };

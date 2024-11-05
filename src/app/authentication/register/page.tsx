@@ -3,6 +3,8 @@ import { Grid, Box, Card, Typography, Stack } from "@mui/material";
 import Link from "next/link";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import AuthRegister from "../auth/AuthRegister";
+import Image from 'next/image';
+
 
 const Register2 = () => (
   <PageContainer title="Register" description="">
@@ -42,7 +44,13 @@ const Register2 = () => (
             sx={{ p: 4, zIndex: 1, width: "100%", maxWidth: "500px" }}
           >
             <Box display="flex" alignItems="center" justifyContent="center">
-              <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%', marginTop: '-100px', marginBottom: '-140px'}} />
+              {/* <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%', marginTop: '-100px', marginBottom: '-140px'}} /> */}
+              <Image 
+                  src="/images/logos/my-abseni.png" 
+                  alt="My Absensi" 
+                  layout="responsive" 
+                  style={{ width: '100%', marginTop: '-100px', marginBottom: '-150px'}}
+                />
             </Box>
             <AuthRegister
               subtext={

@@ -43,6 +43,9 @@ const DrawerInputPresensi: React.FC<DrawerInputPresensiProps> = ({ open, onClose
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
+    const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
+    const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
+    const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
 
     // Fungsi untuk mendapatkan geolocation
     const getGeolocation = () => {
@@ -64,7 +67,7 @@ const DrawerInputPresensi: React.FC<DrawerInputPresensiProps> = ({ open, onClose
 
     useEffect(() => {
         getGeolocation();
-    }, []);
+    }, [basicAuth]);
 
     const handleSubmit = async () => {
 
@@ -99,16 +102,14 @@ const DrawerInputPresensi: React.FC<DrawerInputPresensiProps> = ({ open, onClose
         try {
             const response_masuk = await axios.post('https://backend-apps.ptspsi.co.id/api/presensi-masuk', dataMasuk, {
                 headers: {
-                    'Authorization': `Bearer ${Cookies.get('token')}`,
+                    'Authorization': `Basic ${basicAuth}`,
                 }
             });
-            console.log("Response API Presensi Masuk:", response_masuk.data.status);
             const response_keluar = await axios.post('https://backend-apps.ptspsi.co.id/api/presensi-keluar', dataKeluar, {
                 headers: {
-                    'Authorization': `Bearer ${Cookies.get('token')}`,
+                    'Authorization': `Basic ${basicAuth}`,
                 }
             });
-            console.log("Response API Presensi Masuk:", response_keluar.data.status);
     
             setSnackbarMessage('Presensi berhasil disimpan');
             setSnackbarSeverity('success');
@@ -123,12 +124,8 @@ const DrawerInputPresensi: React.FC<DrawerInputPresensiProps> = ({ open, onClose
             setSnackbarSeverity('error');
             // onClose();
             setSnackbarOpen(true);
-
         }
-        
     };
-
-   
 
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
