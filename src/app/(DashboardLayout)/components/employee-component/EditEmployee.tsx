@@ -1,5 +1,4 @@
-import { useRouter } from 'next/navigation';
-import { useParams } from 'react-router-dom';
+import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
     Button,
@@ -21,8 +20,9 @@ import { Image, CloudUpload } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 
 const EditEmployee: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-
+    const params = useParams();
+    const id = params?.id;
+    
     const [employeeData, setEmployeeData] = useState<any>(null);
     const [formData, setFormData] = useState<{ [key: string]: any }>({
         _method: 'PUT',

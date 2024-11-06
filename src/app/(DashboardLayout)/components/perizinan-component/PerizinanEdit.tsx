@@ -9,11 +9,7 @@ import {
 import { SelectChangeEvent } from '@mui/material/Select';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
-import { useRouter } from 'next/navigation';
-import { useParams } from 'react-router-dom';
-
-import Cookies from 'js-cookie';
-
+import { useRouter, useParams } from 'next/navigation';
 
 interface JenisIzin {
     id: number;
@@ -31,7 +27,9 @@ interface Employee {
 
 const PerizinanEdit: React.FC = () => {
 
-  const { id } = useParams<{ id: string }>();
+  const params = useParams();
+  const id = params?.id;
+  
   const [perizinanData, setPerizinanData] = useState<any>(null);
   const [jenis_izins, setJenisIzins] = useState<JenisIzin[]>([]);
   const [categorys, setCategory] = useState<Category[]>([]);
@@ -71,7 +69,7 @@ const PerizinanEdit: React.FC = () => {
     try {
       const response = await fetch('/api/get-employee', {
         method: 'GET',
-        credentials: 'include', // Sertakan cookies dalam permintaan
+        credentials: 'include',
       });      
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -131,6 +129,8 @@ const PerizinanEdit: React.FC = () => {
   }, [id, basicAuth, fetchJenisIzin, fetchCategory]);
   
   useEffect(() => {
+    console.log('ID:', id);
+
     const fetchPerizinan = async () => {
       if (id) {
         try {
@@ -139,6 +139,7 @@ const PerizinanEdit: React.FC = () => {
               'Authorization': `Basic ${basicAuth}`
             }
           });
+          
           const data = response.data.data;
           setPerizinanData(data);
 
@@ -287,7 +288,7 @@ const PerizinanEdit: React.FC = () => {
             <FormControl variant="outlined" fullWidth required>
                 <InputLabel>Jenis Izin</InputLabel>
                 <Select
-                    name="category_id"
+                    name="jenis_izin_id"
                     value={formData.jenis_izin_id || ''}
                     onChange={handleSelectChange}
                     label="Category"

@@ -19,7 +19,7 @@ const TotalAbsensi = () => {
               Total Absensi
             </Typography>
             <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
-              15 {/* Ganti dengan jumlah total absensi */}
+              15
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
               <Typography variant="body2" sx={{ mr: 1 }}>

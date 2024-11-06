@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import PageContainer from "../../components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 import axios, { AxiosError } from "axios";
-import Cookies from "js-cookie";
 import AttendanceForm2 from "../../components/presensi-component/AttendanceForm2";
 
 const FaceRecognition = dynamic(
@@ -58,10 +57,10 @@ export default function ScanQRPage2() {
     time: string,
     latitude: string,
     longitude: string,
-    statusKeluar: string,
+    status: string,
     description: string
   ) => {
-    console.log("Status received:", statusKeluar);  // Debugging line
+    
     const dataKeluar = {
       shift_id: shift,
       companies_users_id: data,
@@ -69,7 +68,7 @@ export default function ScanQRPage2() {
       jam:time,
       latitude:latitude,
       longtitude:longitude,
-      status:statusKeluar,
+      status:status,
       keterangan:description,
     };
 

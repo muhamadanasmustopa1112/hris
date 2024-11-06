@@ -3,6 +3,7 @@ import {
     IconFileDelta,
     IconFileDescription,
     IconFileDiff,
+    IconUserCircle,
   } from "@tabler/icons-react";
   
   import { uniqueId } from "lodash";
@@ -48,6 +49,16 @@ import {
       title: "Pengajuan Kasbon",
       icon: IconFileDiff,
       href: "/kasbon",
+    },
+    {
+      navlabel: true,
+      subheader: "Settings",
+    },
+    {
+      id: uniqueId(),
+      title: "My Profile",
+      icon: IconUserCircle,
+      href: "/profile",
     },
   
   ];

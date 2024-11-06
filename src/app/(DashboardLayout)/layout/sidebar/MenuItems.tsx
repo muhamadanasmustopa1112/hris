@@ -8,6 +8,7 @@ import {
   IconFileDescription,
   IconFileDiff,
   IconLayoutDashboard,
+  IconUserCircle,
   IconUsers,
 } from "@tabler/icons-react";
 
@@ -90,6 +91,16 @@ const Menuitems = [
     title: "Pengajuan Kasbon",
     icon: IconFileDiff,
     href: "/kasbon",
+  },
+  {
+    navlabel: true,
+    subheader: "Settings",
+  },
+  {
+    id: uniqueId(),
+    title: "My Profile",
+    icon: IconUserCircle,
+    href: "/profile",
   },
 
 ];

@@ -18,8 +18,8 @@ export async function GET() {
     const tokenCookie = cookieStore.get('token')?.value;
 
     // Memeriksa apakah cookie user ada
-    if (!userCookie) {
-      return NextResponse.json({ message: 'No user found in cookies' }, { status: 400 });
+    if (!userCookie || !tokenCookie) {
+      return NextResponse.json({ message: 'User or token not found in cookies' }, { status: 400 });
     }
 
     const userObject = JSON.parse(userCookie);

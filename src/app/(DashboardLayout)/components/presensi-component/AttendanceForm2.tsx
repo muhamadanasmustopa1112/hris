@@ -21,7 +21,7 @@ const AttendanceForm2: React.FC<AttendanceFormProps> = ({ data, onSubmit }) => {
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [statusKeluar, setStatusKeluar] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
@@ -73,11 +73,14 @@ const AttendanceForm2: React.FC<AttendanceFormProps> = ({ data, onSubmit }) => {
   }, [basicAuth]);
 
   const handleSubmit = () => {
+
+    if (!status) {
+      setError("Silakan pilih status terlebih dahulu.");
+      return;
+    }
     
-    onSubmit(shiftId, date, time, latitude, longitude, description, statusKeluar, data);
-    setShiftId("");
+    onSubmit(shiftId, date, time, latitude, longitude, description, status, data);
     setDescription("");
-    setStatusKeluar("");
   };
 
   return (
@@ -150,9 +153,9 @@ const AttendanceForm2: React.FC<AttendanceFormProps> = ({ data, onSubmit }) => {
             <InputLabel id="select-status-label">Status</InputLabel>
             <Select
               labelId="select-status-label"
-              value={statusKeluar}
+              value={status}
               label="Status"
-              onChange={(e) => setStatusKeluar(e.target.value)}
+              onChange={(e) => setStatus(e.target.value)}
             >
               <MenuItem value="Pulang Kerja">Pulang Kerja</MenuItem>
               <MenuItem value="Izin">Izin</MenuItem>
