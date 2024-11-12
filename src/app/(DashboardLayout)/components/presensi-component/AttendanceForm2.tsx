@@ -81,6 +81,7 @@ const AttendanceForm2: React.FC<AttendanceFormProps> = ({ data, onSubmit }) => {
     
     onSubmit(shiftId, date, time, latitude, longitude, description, status, data);
     setDescription("");
+    setError(null);
   };
 
   return (
@@ -176,6 +177,12 @@ const AttendanceForm2: React.FC<AttendanceFormProps> = ({ data, onSubmit }) => {
           <Button variant="contained" color="primary" onClick={handleSubmit}>
             Submit
           </Button>
+
+          {error && (
+            <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+              {error}
+            </Typography>
+          )}
         </>
       )}
     </Box>

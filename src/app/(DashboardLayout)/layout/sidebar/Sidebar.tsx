@@ -1,7 +1,9 @@
-import { useMediaQuery, Box, Drawer, Typography } from "@mui/material";
+import { useMediaQuery, Box, Drawer, Typography, Button } from "@mui/material";
 import SidebarItems from "./SidebarItems";
 import { Sidebar } from 'react-mui-sidebar';
 import Image from 'next/image';
+import { Download } from "@mui/icons-material";
+import InstallAppButton from "./InstallAppButton";
 
 
 interface ItemType {
@@ -88,6 +90,9 @@ const MSidebar = ({
                 {/* ------------------------------------------- */}
                 <SidebarItems />
                 {/* <Upgrade /> */}
+                <Box sx={{ mt: 5 }}> {/* Adjust '5' to your desired margin */}
+                  <InstallAppButton onClick={() => console.log("Install App clicked")} />
+                </Box>
               </Box>
             </Sidebar >
           </Box>
@@ -132,6 +137,9 @@ const MSidebar = ({
           {/* ------------------------------------------- */}
           <SidebarItems />
           {/* <Upgrade /> */}
+          <Box sx={{ mt: 5 }}> {/* Adjust '5' to your desired margin */}
+            <InstallAppButton onClick={() => console.log("Install App clicked")} />
+          </Box>
         </Sidebar>
       </Box>
       {/* ------------------------------------------- */}

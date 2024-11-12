@@ -14,14 +14,14 @@ const FaceRecognition: React.FC<FaceRecognitionProps> = ({ userId, onSuccess }) 
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [faceMatcher, setFaceMatcher] = useState<faceapi.FaceMatcher | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null); // Simpan referensi stream
+  const mediaStreamRef = useRef<MediaStream | null>(null);
 
   const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
   const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
 
   const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
 
-  // Load face recognition models
+  // Load faceapi models
   useEffect(() => {
     const loadModels = async () => {
       try {
@@ -37,9 +37,9 @@ const FaceRecognition: React.FC<FaceRecognitionProps> = ({ userId, onSuccess }) 
     };
 
     loadModels();
-  }, [basicAuth]);
+  }, []);
 
-  // Fetch user face data from database and create face matcher
+  // Fetch user face data for face matcher
   useEffect(() => {
     if (modelsLoaded) {
       const fetchUserPhoto = async () => {
@@ -72,7 +72,7 @@ const FaceRecognition: React.FC<FaceRecognitionProps> = ({ userId, onSuccess }) 
               user.name,
               [userDescriptor.descriptor]
             );
-            const matcher = new faceapi.FaceMatcher([labeledFaceDescriptor], 0.6); // Create matcher with threshold
+            const matcher = new faceapi.FaceMatcher([labeledFaceDescriptor], 0.6);
             setFaceMatcher(matcher);
           } else {
             setError("Wajah tidak terdeteksi dari foto database.");
@@ -87,7 +87,7 @@ const FaceRecognition: React.FC<FaceRecognitionProps> = ({ userId, onSuccess }) 
     }
   }, [modelsLoaded, userId, basicAuth]);
 
-  // Perform face recognition by comparing live camera feed with database face descriptor
+  // Handle face recognition
   const handleRecognition = async () => {
     if (videoRef.current && faceMatcher) {
       try {
@@ -99,10 +99,8 @@ const FaceRecognition: React.FC<FaceRecognitionProps> = ({ userId, onSuccess }) 
         if (detection) {
           const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
           if (bestMatch.label !== "unknown") {
-            onSuccess(); // If face matches, trigger success callback
-            console.log("Face matched:", bestMatch.label);
-            // Stop the camera
-            stopCamera();
+            onSuccess();
+            stopCamera(); // Stop camera after success
           } else {
             setError("Wajah tidak cocok.");
           }
@@ -116,27 +114,43 @@ const FaceRecognition: React.FC<FaceRecognitionProps> = ({ userId, onSuccess }) 
     }
   };
 
-  // Function to stop camera
-  const stopCamera = () => {
-    if (mediaStream) {
-      mediaStream.getTracks().forEach(track => track.stop());
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        mediaStreamRef.current = stream;
+      }
+    } catch (err) {
+      setError("Gagal mengakses kamera.");
+      console.error(err);
     }
   };
 
-  // Start camera on mount
-  useEffect(() => {
-    if (videoRef.current) {
-      navigator.mediaDevices
-        .getUserMedia({ video: {} })
-        .then((stream) => {
-          videoRef.current!.srcObject = stream;
-          setMediaStream(stream);
-        })
-        .catch(() => {
-          setError("Gagal mengakses kamera.");
-        });
+  const stopCamera = () => {
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => {
+        track.stop();
+      });
+      mediaStreamRef.current = null;
+    } else {
+      console.log("No media stream found.");
     }
-  }, [basicAuth]);
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  // Start the camera stream and handle cleanup on unmount
+  useEffect(() => {
+    startCamera();
+
+    // Cleanup on unmount
+    return () => {
+      stopCamera();
+    };
+  }, []);
 
   return (
     <Box 

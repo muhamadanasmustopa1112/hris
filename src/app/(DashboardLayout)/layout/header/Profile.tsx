@@ -32,7 +32,7 @@ const Profile = () => {
     Cookies.remove('user');
     Cookies.remove('token');
 
-    router.push('/authentication/login');
+    router.push('/authentication/select-login');
   };
 
 

@@ -4,14 +4,14 @@ import {
   Typography,
   Button,
   Stack,
-  InputAdornment,
   IconButton,
+  InputAdornment,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import Cookies from 'js-cookie';
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import Cookies from "js-cookie";
 
 interface loginType {
   title?: string;
@@ -19,19 +19,18 @@ interface loginType {
   subtext?: JSX.Element | JSX.Element[];
 }
 
-const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
+const AuthLogin2 = ({ title, subtitle, subtext }: loginType) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Menambah state untuk kontrol visibilitas password
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-  
-    try {
 
+    try {
       const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
       const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
 
@@ -51,12 +50,12 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         Cookies.set("user", JSON.stringify(response.data.user), { expires: 3 / 24 });
         Cookies.set("token", response.data.token, { expires: 3 / 24 });
         
-        if (response.data.user.roles && response.data.user.roles[0].name === "admin") {
-          const redirectPath = "/";
-          router.push(redirectPath);
-        } else {
-          setError("Gunakan account admin!");
-        }
+        if (response.data.user.roles && response.data.user.roles[0].name === "employee") {
+            const redirectPath = "/lembur";
+            router.push(redirectPath);
+          } else {
+            setError("Tidak bisa login dengan account admin!");
+          }
 
       } else {
         setError("Login failed. Please check your credentials.");
@@ -68,7 +67,6 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     }
   };
 
-  
   useEffect(() => {
     const checkSession = setInterval(() => {
       const token = Cookies.get("token");
@@ -78,7 +76,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         router.push("/authentication/select-login"); 
       }
     }, 7200000); 
-  
+
     return () => clearInterval(checkSession);
   }, [router]);
 
@@ -164,4 +162,4 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   );
 };
 
-export default AuthLogin;
+export default AuthLogin2;

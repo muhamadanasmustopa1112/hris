@@ -57,10 +57,9 @@ export default function ScanQRPage2() {
     time: string,
     latitude: string,
     longitude: string,
+    description: string,
     status: string,
-    description: string
   ) => {
-    
     const dataKeluar = {
       shift_id: shift,
       companies_users_id: data,
@@ -68,28 +67,38 @@ export default function ScanQRPage2() {
       jam:time,
       latitude:latitude,
       longtitude:longitude,
-      status:status,
       keterangan:description,
+      status:status,
     };
 
     try {
-
-     const response = await axios.post('https://backend-apps.ptspsi.co.id/api/presensi-keluar', dataKeluar, {
+      const response = await axios.post('https://backend-apps.ptspsi.co.id/api/presensi-keluar', dataKeluar, {
         headers: {
           'Authorization': `Basic ${basicAuth}`
         },
       });
-      
+    
       setSnackbar({ open: true, message: "Form submitted successfully!", severity: "success" });
-
+    
     } catch (error) {
-      const submitError = error as AxiosError<{ message?: string }>;
-      const errorMessage = submitError.response?.data?.message || "Form submission failed.";
-
-      console.error("Submission error:", errorMessage);
-      
+      // Pastikan `error` adalah tipe `AxiosError`
+      const submitError = error as AxiosError<{ message?: string; errors?: Record<string, string[]> }>;
+    
+      let errorMessage = "Form submission failed.";
+    
+      if (submitError.response?.data?.errors) {
+        const errors = submitError.response.data.errors;
+    
+        errorMessage = Object.values(errors)
+          .flat()
+          .join(", ");
+      } else if (submitError.response?.data?.message) {
+        errorMessage = submitError.response.data.message;
+      }
+    
       setSnackbar({ open: true, message: errorMessage, severity: "error" });
     }
+    
   };
 
   const handleCloseSnackbar = () => {
@@ -134,7 +143,6 @@ export default function ScanQRPage2() {
             </Typography>
           )}
 
-          {/* Snackbar for success/error messages */}
           <Snackbar
             open={snackbar.open}
             autoHideDuration={6000}
