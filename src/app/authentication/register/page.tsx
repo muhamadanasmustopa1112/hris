@@ -5,7 +5,6 @@ import PageContainer from "@/app/(DashboardLayout)/components/container/PageCont
 import AuthRegister from "../auth/AuthRegister";
 import Image from 'next/image';
 
-
 const Register2 = () => (
   <PageContainer title="Register" description="">
     <Box
@@ -34,23 +33,24 @@ const Register2 = () => (
           xs={12}
           sm={12}
           lg={4}
-          xl={3}
+          xl={5}  
           display="flex"
           justifyContent="center"
           alignItems="center"
         >
           <Card
             elevation={9}
-            sx={{ p: 4, zIndex: 1, width: "100%", maxWidth: "500px" }}
+            sx={{ p: 4, zIndex: 1, width: "100%", maxWidth: "900px" }} 
           >
             <Box display="flex" alignItems="center" justifyContent="center">
-              {/* <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%', marginTop: '-100px', marginBottom: '-140px'}} /> */}
               <Image 
-                  src="/images/logos/my-abseni.png" 
-                  alt="My Absensi" 
-                  layout="responsive" 
-                  style={{ width: '100%', marginTop: '-100px', marginBottom: '-150px'}}
-                />
+                src="/images/logos/my-abseni.png" 
+                alt="My Absensi" 
+                width={250}
+                height={250}
+                style={{ width: 'auto', marginTop: '-90px', marginBottom: '-100px' }}
+                priority
+              />
             </Box>
             <AuthRegister
               subtext={
@@ -60,7 +60,7 @@ const Register2 = () => (
                   color="textSecondary"
                   mb={3}
                 >
-                    Aplikasi untuk mempermudah absensi
+                  Silahkan daftarkan perusahaan anda
                 </Typography>
               }
               subtitle={
@@ -79,7 +79,7 @@ const Register2 = () => (
                   </Typography>
                   <Typography
                     component={Link}
-                    href="/authentication/login"
+                    href="/authentication/login-admin"
                     fontWeight="500"
                     sx={{
                       textDecoration: "none",
