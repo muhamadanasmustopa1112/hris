@@ -50,8 +50,10 @@ const Login = () => {
                 <Image 
                   src="/images/logos/my-abseni.png" 
                   alt="My Absensi" 
-                  layout="responsive" 
-                  style={{ width: '100%', marginTop: '-100px', marginBottom: '-150px'}}
+                  width={250}
+                  height={250}
+                  style={{ width: 'auto', marginTop: '-90px', marginBottom: '-100px' }}
+                  priority
                 />
               </Box>
               <AuthLogin
