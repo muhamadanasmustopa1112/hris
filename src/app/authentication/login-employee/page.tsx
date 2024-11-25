@@ -47,7 +47,7 @@ const Login = () => {
               <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
                 {/* <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%', marginTop: '-100px', marginBottom: '-150px'}} /> */}
                 <Image 
-                  src="/images/logos/my-abseni.png" 
+                  src="/images/logos/logo.png" 
                   alt="My Absensi" 
                   width={250}
                   height={250}
@@ -56,16 +56,6 @@ const Login = () => {
                 />
               </Box>
               <AuthLogin2
-                subtext={
-                  <Typography
-                    variant="subtitle1"
-                    textAlign="center"
-                    color="textSecondary"
-                    mb={3}
-                  >
-                    Aplikasi untuk mempermudah absensi
-                  </Typography>
-                }
               />
             </Card>
           </Grid>

@@ -44,10 +44,10 @@ const SelectLogin = () => {
               elevation={10}
               sx={{ p: 4, zIndex: 1, width: "100%", maxWidth: "500px", textAlign: "center" }}
             >
-              <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
+              <Box display="flex" alignItems="center" justifyContent="center" mb={5}>
                 {/* <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%', marginTop: '-100px', marginBottom: '-150px'}} /> */}
                 <Image 
-                  src="/images/logos/my-abseni.png" 
+                  src="/images/logos/logo.png" 
                   alt="My Absensi" 
                   width={250}
                   height={250}

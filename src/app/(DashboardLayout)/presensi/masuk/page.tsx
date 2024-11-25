@@ -118,7 +118,10 @@
                   </Button>
                 )}
                 {scanning && (
-                  <Paper sx={{ p: 2, mb: 2 }}>
+                  <Paper sx={{ p: 2, mb: 2, textAlign:'center' }}>
+                    <Typography variant="h6" sx={{ mb: 2 }}>
+                      Silakan scan QR code
+                    </Typography>
                     <BarcodeScannerComponent
                       onUpdate={handleScan}
                       width={300}

@@ -2,8 +2,6 @@ import { useMediaQuery, Box, Drawer, Typography, Button } from "@mui/material";
 import SidebarItems from "./SidebarItems";
 import { Sidebar } from 'react-mui-sidebar';
 import Image from 'next/image';
-import { Download } from "@mui/icons-material";
-import InstallAppButton from "./InstallAppButton";
 
 
 interface ItemType {
@@ -75,14 +73,14 @@ const MSidebar = ({
               {/* ------------------------------------------- */}
               {/* Logo */}
               {/* ------------------------------------------- */}
-              <Box sx={{ width: 200, height: '110px', marginTop: '-40px', justifyContent: 'center', }}>
+              <Box sx={{ width: 250, height: '110px', marginTop: '-70px', marginBottom:'80px' , justifyContent: 'center', }}>
                 <Image 
-                  src="/images/logos/my-abseni.png" 
+                  src="/images/logos/logo.png" 
                   alt="My Absensi" 
                   layout="responsive" 
                   width={100}
                   height={100}
-                />
+              />
               </Box>
               <Box>
                 {/* ------------------------------------------- */}
@@ -90,9 +88,7 @@ const MSidebar = ({
                 {/* ------------------------------------------- */}
                 <SidebarItems />
                 {/* <Upgrade /> */}
-                <Box sx={{ mt: 5 }}> {/* Adjust '5' to your desired margin */}
-                  <InstallAppButton onClick={() => console.log("Install App clicked")} />
-                </Box>
+         
               </Box>
             </Sidebar >
           </Box>
@@ -137,9 +133,7 @@ const MSidebar = ({
           {/* ------------------------------------------- */}
           <SidebarItems />
           {/* <Upgrade /> */}
-          <Box sx={{ mt: 5 }}> {/* Adjust '5' to your desired margin */}
-            <InstallAppButton onClick={() => console.log("Install App clicked")} />
-          </Box>
+     
         </Sidebar>
       </Box>
       {/* ------------------------------------------- */}

@@ -48,25 +48,25 @@ const Login = () => {
               <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
                 {/* <img src="/images/logos/my-abseni.png" alt="My Absensi" style={{ width: '100%', marginTop: '-100px', marginBottom: '-150px'}} /> */}
                 <Image 
-                  src="/images/logos/my-abseni.png" 
+                  src="/images/logos/logo.png" 
                   alt="My Absensi" 
                   width={250}
                   height={250}
                   style={{ width: 'auto', marginTop: '-90px', marginBottom: '-100px' }}
                   priority
                 />
+               
+              </Box>
+              <Box display="flex" alignItems="center" justifyContent="center" mt={5}>
+                <Typography
+                    color="textSecondary"
+                    variant="h6"
+                    fontWeight="1000"
+                  >
+                    Login admin
+                </Typography>
               </Box>
               <AuthLogin
-                subtext={
-                  <Typography
-                    variant="subtitle1"
-                    textAlign="center"
-                    color="textSecondary"
-                    mb={3}
-                  >
-                    Aplikasi untuk mempermudah absensi
-                  </Typography>
-                }
                 subtitle={
                   <Stack
                     direction="row"

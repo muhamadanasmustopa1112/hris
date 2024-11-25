@@ -159,7 +159,6 @@ const FaceRecognition: React.FC<FaceRecognitionProps> = ({ userId, onSuccess }) 
         flexDirection: 'column', 
         justifyContent: 'center', 
         alignItems: 'center', 
-        height: '100vh'
       }}
     >
       <Typography variant="h6">Pengenalan Wajah</Typography>

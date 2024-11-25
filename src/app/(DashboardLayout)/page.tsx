@@ -1,5 +1,5 @@
 "use client";
-import { Box, CircularProgress, Grid } from '@mui/material';
+import { Box, CircularProgress, Grid, Typography } from '@mui/material';
 import PageContainer from './components/container/PageContainer';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
@@ -11,6 +11,10 @@ interface Izin {
   totalOnProsses: number;
   totalSuccess: number;
   totalDecline: number;
+}
+
+interface CompanyDetails {
+  name: string;
 }
 
 interface Lembur {
@@ -35,17 +39,9 @@ const Dashboard = () => {
   const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [companyDetails, setCompanyDetails] = useState<CompanyDetails | null>(null);
 
   const router = useRouter();
-
-  useEffect(() => {
-    const userCookie = Cookies.get('user');
-    const user = userCookie ? JSON.parse(userCookie) : null;
-
-    if (user?.roles[0]?.name !== "admin") {
-      router.replace('/404');
-    }
-  }, [router]);
 
   const fetchDivisions = useCallback(async () => {
     const userCookie = Cookies.get('user');
@@ -77,10 +73,52 @@ const Dashboard = () => {
       setLoading(false);
     }
   }, [basicAuth]);
+
+
+  const getDetailCompany = useCallback(async () => {
+    const userCookie = Cookies.get('user');
+    const user = userCookie ? JSON.parse(userCookie) : null;
+  
+    if (!user || !user.company_id) {
+      alert("DATA NOT FOUND!");
+      return;
+    }
+  
+    try {
+      const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/company-detail/${user.company_id}`, {
+        headers: {
+          'Authorization': `Basic ${basicAuth}`
+        }
+      });
+      
+      setCompanyDetails(response.data.data); 
+  
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    }
+  }, [basicAuth]);
   
   useEffect(() => {
     fetchDivisions();
-  }, [fetchDivisions]);
+    getDetailCompany();
+  }, [fetchDivisions,getDetailCompany]);
+
+  useEffect(() => {
+    const token = Cookies.get('token');
+    const userCookie = Cookies.get('user');
+    const user = userCookie ? JSON.parse(userCookie) : null;
+
+    if (!token) {
+      router.replace('/authentication/select-login');
+    } else if (user?.roles[0]?.name !== "admin") {
+      router.replace('/404');
+      console.log(user?.roles[0]?.name);
+    }
+  }, [router]);
 
   const chartData = [
      { name: 'Izin', onProses: izin?.totalOnProsses || 0, success: izin?.totalSuccess || 0, decline: izin?.totalDecline || 0 },
@@ -94,6 +132,9 @@ const Dashboard = () => {
   return (
     <PageContainer title="Dashboard" description="This is Dashboard">
       <Box>
+        <Typography variant="h6" gutterBottom mb={5}>
+          Selamat Datang, {companyDetails?.name}
+        </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <BarChartsDashboard data={chartData} />

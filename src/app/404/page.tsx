@@ -4,7 +4,7 @@ import { Box, Typography, Container } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 const NotFoundPage = () => {
-
+  
   return (
     <Container maxWidth="md" sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh" }}>
       <Box textAlign="center">
