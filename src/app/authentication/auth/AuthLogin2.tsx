@@ -12,6 +12,7 @@ import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elem
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import InstallAppButton from "@/app/(DashboardLayout)/layout/sidebar/InstallAppButton";
 
 interface loginType {
   title?: string;
@@ -156,6 +157,7 @@ const AuthLogin2 = ({ title, subtitle, subtext }: loginType) => {
         >
           Sign In
         </Button>
+        <InstallAppButton />
       </Box>
       {subtitle}
     </form>

@@ -1,8 +1,8 @@
-import React from 'react';
-import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge } from '@mui/material';
-import PropTypes from 'prop-types';
-import Profile from './Profile';
+import React, { useState, useEffect } from 'react';
+import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Typography } from '@mui/material';
 import { IconBellRinging, IconMenu } from '@tabler/icons-react';
+import Cookies from 'js-cookie';
+import Profile from './Profile';
 
 interface ItemType {
   toggleMobileSidebar: (event: React.MouseEvent<HTMLElement>) => void;
@@ -26,6 +26,15 @@ const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
 }));
 
 const Header = ({ toggleMobileSidebar }: ItemType) => {
+  const [user, setUser] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userCookie = Cookies.get('user');
+    if (userCookie) {
+      setUser(JSON.parse(userCookie).name);
+    }
+  }, []);
+
   return (
     <AppBarStyled position="sticky" color="default">
       <ToolbarStyled>
@@ -39,7 +48,7 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
               xs: 'inline',
             },
             '&:hover': {
-              backgroundColor: theme => theme.palette.action.hover, // Menambahkan hover effect
+              backgroundColor: theme => theme.palette.action.hover,
             },
           }}
         >
@@ -54,7 +63,7 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
           aria-haspopup="true"
           sx={{
             '&:hover': {
-              backgroundColor: theme => theme.palette.action.hover, // Menambahkan hover effect
+              backgroundColor: theme => theme.palette.action.hover,
             },
           }}
         >
@@ -63,6 +72,14 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
           </Badge>
         </IconButton>
 
+        <Typography
+          variant="h6"
+          align="center"
+          gutterBottom
+          style={{ marginLeft: "20px" }}
+        >
+          {user ? `Selamat Datang, ${user}` : 'Selamat Datang'}
+        </Typography>
         <Box flexGrow={1} />
 
         <Stack spacing={1} direction="row" alignItems="center">
@@ -72,9 +89,4 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
     </AppBarStyled>
   );
 };
-
-Header.propTypes = {
-  toggleMobileSidebar: PropTypes.func.isRequired,
-};
-
 export default Header;

@@ -34,9 +34,9 @@ export default function RootLayout({
 
   useEffect(() => {
     const token = Cookies.get('token');
-   
+
     if (!token) {
-      router.push('/authentication/select-login'); 
+      router.replace('/authentication/select-login'); 
     }
 
 
