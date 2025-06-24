@@ -53,7 +53,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/dashboard/${user.company_id}`, {
+      const response = await axios.get(`https://hris-api.ptspsi.co.id/api/dashboard/${user.company_id}`, {
         headers: {
           'Authorization': `Basic ${basicAuth}`
         }
@@ -85,7 +85,7 @@ const Dashboard = () => {
     }
   
     try {
-      const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/company-detail/${user.company_id}`, {
+      const response = await axios.get(`https://hris-api.ptspsi.co.id/api/company-detail/${user.company_id}`, {
         headers: {
           'Authorization': `Basic ${basicAuth}`
         }

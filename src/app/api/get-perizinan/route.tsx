@@ -36,8 +36,8 @@ export async function GET() {
     }
     
     const apiUrl = userObject?.roles[0].name === "admin"
-    ? `https://backend-apps.ptspsi.co.id/api/perizinan?company_id=${userObject.company_id}`
-    : `https://backend-apps.ptspsi.co.id/api/perizinan-user/${userObject?.companies_users_id}`;
+    ? `https://hris-api.ptspsi.co.id/api/perizinan?company_id=${userObject.company_id}`
+    : `https://hris-api.ptspsi.co.id/api/perizinan-user/${userObject?.companies_users_id}`;
 
     const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
     const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;

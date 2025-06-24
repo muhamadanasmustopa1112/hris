@@ -76,7 +76,7 @@ const EditEmployee: React.FC = () => {
             
             try {
 
-                const response = await axios.get('https://backend-apps.ptspsi.co.id/api/division', {
+                const response = await axios.get('https://hris-api.ptspsi.co.id/api/division', {
                     params: {
                       company_id: user.company_id,
                     },
@@ -111,7 +111,7 @@ const EditEmployee: React.FC = () => {
     
           try {
     
-            const response = await axios.get('https://backend-apps.ptspsi.co.id/api/jabatan', {
+            const response = await axios.get('https://hris-api.ptspsi.co.id/api/jabatan', {
                 params: {
                   company_id: user.company_id,
                 },
@@ -137,7 +137,7 @@ const EditEmployee: React.FC = () => {
         if (id) {
             const fetchEmployeeDetails = async () => {
                 try {
-                    const response = await fetch(`https://backend-apps.ptspsi.co.id/api/company-user/${id}`,{
+                    const response = await fetch(`https://hris-api.ptspsi.co.id/api/company-user/${id}`,{
                         method: 'GET',
                         headers: {
                             'Authorization': `Basic ${basicAuth}`,
@@ -222,7 +222,7 @@ const EditEmployee: React.FC = () => {
         event.preventDefault();
 
         try {
-            const response = await axios.post(`https://backend-apps.ptspsi.co.id/api/company-user/${id}`, formData, {
+            const response = await axios.post(`https://hris-api.ptspsi.co.id/api/company-user/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Basic ${basicAuth}`,

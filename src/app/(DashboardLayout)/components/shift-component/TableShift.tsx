@@ -93,7 +93,7 @@ import Cookies from 'js-cookie';
       const confirmDelete = window.confirm('Are you sure you want to delete this Shift?');
       if (confirmDelete) {
         try {
-          const response = await fetch(`https://backend-apps.ptspsi.co.id/api/shift/${id}`, {
+          const response = await fetch(`https://hris-api.ptspsi.co.id/api/shift/${id}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',

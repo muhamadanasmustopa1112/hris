@@ -37,7 +37,7 @@ const DrawerEditDivision: React.FC<DrawerEditDivisionProps> = ({ open, onClose, 
       if (open && divisionId) {
         try {
         
-          const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/division/${divisionId}`, {
+          const response = await axios.get(`https://hris-api.ptspsi.co.id/api/division/${divisionId}`, {
             headers: {
               'Authorization': `Basic ${basicAuth}`
             }
@@ -75,7 +75,7 @@ const DrawerEditDivision: React.FC<DrawerEditDivisionProps> = ({ open, onClose, 
 
     setLoading(true);
     try {
-      const response = await axios.put(`https://backend-apps.ptspsi.co.id/api/division/${divisionId}`, {
+      const response = await axios.put(`https://hris-api.ptspsi.co.id/api/division/${divisionId}`, {
           name: divisionName,
         }, {
           headers: {

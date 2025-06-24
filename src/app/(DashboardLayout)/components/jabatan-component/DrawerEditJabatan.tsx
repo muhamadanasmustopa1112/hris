@@ -37,7 +37,7 @@ const DrawerEditJabatan: React.FC<DrawerEditJabatanProps> = ({ open, onClose, on
     const fetchJabatanData = async () => {
       if (open && jabatanId) {
         try {
-          const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/jabatan/${jabatanId}`, {
+          const response = await axios.get(`https://hris-api.ptspsi.co.id/api/jabatan/${jabatanId}`, {
             headers: {
               'Authorization': `Basic ${basicAuth}`
             }
@@ -75,7 +75,7 @@ const DrawerEditJabatan: React.FC<DrawerEditJabatanProps> = ({ open, onClose, on
 
     setLoading(true);
     try {
-      const response = await axios.put(`https://backend-apps.ptspsi.co.id/api/jabatan/${jabatanId}`, {
+      const response = await axios.put(`https://hris-api.ptspsi.co.id/api/jabatan/${jabatanId}`, {
           name: jabatanName,
         }, {
           headers: {

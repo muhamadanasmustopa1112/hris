@@ -45,8 +45,8 @@ export default function DataKasbonPage() {
     try {
       
       const endpoint = user?.roles[0].name === "admin"
-      ? 'https://backend-apps.ptspsi.co.id/api/kasbon'
-      : `https://backend-apps.ptspsi.co.id/api/kasbon-user/${user?.companies_users_id}`;
+      ? 'https://hris-api.ptspsi.co.id/api/kasbon'
+      : `https://hris-api.ptspsi.co.id/api/kasbon-user/${user?.companies_users_id}`;
 
       const response = await axios.get(endpoint, {
         params: user?.roles[0].name === "admin"

@@ -58,7 +58,7 @@ export default function DataPresensiPage() {
     
     try {
       
-      const response = await axios.get('https://backend-apps.ptspsi.co.id/api/presensi', {
+      const response = await axios.get('https://hris-api.ptspsi.co.id/api/presensi', {
         params: {
           company_id: user.company_id,
         },

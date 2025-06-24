@@ -80,7 +80,7 @@ const TableEmployee: React.FC<TableEmployeeProps> = ({
     const confirmDelete = window.confirm("Are you sure you want to delete this employee?");
     if (confirmDelete) {
       try {
-        const response = await fetch(`https://backend-apps.ptspsi.co.id/api/company-user/${id}`, {
+        const response = await fetch(`https://hris-api.ptspsi.co.id/api/company-user/${id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',

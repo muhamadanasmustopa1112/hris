@@ -47,7 +47,7 @@ const AttendanceForm2: React.FC<AttendanceFormProps> = ({ data, onSubmit }) => {
       }
 
       try {
-        const response = await axios.get('https://backend-apps.ptspsi.co.id/api/shift-active', {
+        const response = await axios.get('https://hris-api.ptspsi.co.id/api/shift-active', {
           params: {
             company_id: user.company_id,
           },

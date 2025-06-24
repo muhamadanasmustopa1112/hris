@@ -48,7 +48,7 @@ export default function DataShiftPage() {
     
     try {
       
-      const response = await axios.get('https://backend-apps.ptspsi.co.id/api/shift', {
+      const response = await axios.get('https://hris-api.ptspsi.co.id/api/shift', {
         params: {
           company_id: user.company_id,
         },

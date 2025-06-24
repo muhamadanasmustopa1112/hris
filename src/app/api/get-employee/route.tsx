@@ -29,7 +29,7 @@ export async function GET() {
       return NextResponse.json({ message: 'User or company_id not found' }, { status: 400 });
     }
 
-    const apiUrl = `https://backend-apps.ptspsi.co.id/api/all-company-user/${userObject.company_id}`;
+    const apiUrl = `https://hris-api.ptspsi.co.id/api/all-company-user/${userObject.company_id}`;
 
     const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
     const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;

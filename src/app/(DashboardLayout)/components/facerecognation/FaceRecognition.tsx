@@ -53,7 +53,7 @@ const FaceRecognition: React.FC<FaceRecognitionProps> = ({ userId, onSuccess }) 
           }
 
           const response = await axios.get(
-            `https://backend-apps.ptspsi.co.id/api/company-user/${user.companies_users_id}`,
+            `https://hris-api.ptspsi.co.id/api/company-user/${user.companies_users_id}`,
             {
               headers: {
                 'Authorization': `Basic ${basicAuth}`

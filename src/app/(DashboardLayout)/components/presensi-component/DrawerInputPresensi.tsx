@@ -100,12 +100,12 @@ const DrawerInputPresensi: React.FC<DrawerInputPresensiProps> = ({ open, onClose
         };
 
         try {
-            const response_masuk = await axios.post('https://backend-apps.ptspsi.co.id/api/presensi-masuk', dataMasuk, {
+            const response_masuk = await axios.post('https://hris-api.ptspsi.co.id/api/presensi-masuk', dataMasuk, {
                 headers: {
                     'Authorization': `Basic ${basicAuth}`,
                 }
             });
-            const response_keluar = await axios.post('https://backend-apps.ptspsi.co.id/api/presensi-keluar', dataKeluar, {
+            const response_keluar = await axios.post('https://hris-api.ptspsi.co.id/api/presensi-keluar', dataKeluar, {
                 headers: {
                     'Authorization': `Basic ${basicAuth}`,
                 }

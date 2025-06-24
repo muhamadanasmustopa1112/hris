@@ -43,8 +43,8 @@ export default function DataLemburPage() {
 
     try {
       const endpoint = user?.roles[0].name === "admin"
-        ? 'https://backend-apps.ptspsi.co.id/api/lembur'
-        : `https://backend-apps.ptspsi.co.id/api/lembur-user/${user?.companies_users_id}`;
+        ? 'https://hris-api.ptspsi.co.id/api/lembur'
+        : `https://hris-api.ptspsi.co.id/api/lembur-user/${user?.companies_users_id}`;
 
       const response = await axios.get(endpoint, {
         params: user?.roles[0].name === "admin"

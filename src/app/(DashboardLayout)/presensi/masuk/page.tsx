@@ -69,7 +69,7 @@
       };
 
       try {
-        const response = await axios.post('https://backend-apps.ptspsi.co.id/api/presensi-masuk', dataMasuk, {
+        const response = await axios.post('https://hris-api.ptspsi.co.id/api/presensi-masuk', dataMasuk, {
           headers: {
             'Authorization': `Basic ${basicAuth}`
           },

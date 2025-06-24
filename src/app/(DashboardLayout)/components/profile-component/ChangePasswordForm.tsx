@@ -29,7 +29,7 @@ export default function ChangePasswordForm({ userId }: ChangePasswordFormProps) 
     try {
       setPasswordLoading(true);
 
-      const response = await axios.post('https://backend-apps.ptspsi.co.id/api/change-password', {
+      const response = await axios.post('https://hris-api.ptspsi.co.id/api/change-password', {
             id: userId,
             old_password: passwordOld,
             password: passwordNew,

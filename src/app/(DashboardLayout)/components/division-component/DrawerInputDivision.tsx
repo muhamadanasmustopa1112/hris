@@ -53,7 +53,7 @@ const DrawerInputDivision: React.FC<DrawerInputDivisionProps> = ({ open, onClose
     setLoading(true);
     try {
 
-      const response = await axios.post('https://backend-apps.ptspsi.co.id/api/division', {
+      const response = await axios.post('https://hris-api.ptspsi.co.id/api/division', {
           name: divisionName,
           company_id: user.company_id,
         }, {

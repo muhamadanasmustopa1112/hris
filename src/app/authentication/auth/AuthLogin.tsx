@@ -37,7 +37,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
 
       const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
 
-      const response = await axios.post("https://backend-apps.ptspsi.co.id/api/login", {
+      const response = await axios.post("https://hris-api.ptspsi.co.id/api/login", {
           email,
           password,
         }, {

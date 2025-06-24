@@ -79,7 +79,7 @@ const EmployeeInput: React.FC = () => {
 
       try {
 
-        const response = await axios.get('https://backend-apps.ptspsi.co.id/api/division', {
+        const response = await axios.get('https://hris-api.ptspsi.co.id/api/division', {
           params: {
             company_id: user.company_id,
           },
@@ -114,7 +114,7 @@ const EmployeeInput: React.FC = () => {
 
       try {
 
-        const response = await axios.get('https://backend-apps.ptspsi.co.id/api/jabatan', {
+        const response = await axios.get('https://hris-api.ptspsi.co.id/api/jabatan', {
           params: {
             company_id: user.company_id,
           },
@@ -196,7 +196,7 @@ const EmployeeInput: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://backend-apps.ptspsi.co.id/api/create-company-user', formData, {
+      const response = await axios.post('https://hris-api.ptspsi.co.id/api/create-company-user', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Basic ${basicAuth}`,

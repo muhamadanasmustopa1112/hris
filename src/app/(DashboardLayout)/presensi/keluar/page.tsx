@@ -72,7 +72,7 @@ export default function ScanQRPage2() {
     };
 
     try {
-      const response = await axios.post('https://backend-apps.ptspsi.co.id/api/presensi-keluar', dataKeluar, {
+      const response = await axios.post('https://hris-api.ptspsi.co.id/api/presensi-keluar', dataKeluar, {
         headers: {
           'Authorization': `Basic ${basicAuth}`
         },

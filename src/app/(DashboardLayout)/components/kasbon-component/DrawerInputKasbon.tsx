@@ -54,7 +54,7 @@ const DrawerInputKasbon: React.FC<DrawerInputKasbonProps> = ({ open, onClose, on
     setLoading(true);
     setSnackbarOpen(false);
     try {
-      const response = await fetch('https://backend-apps.ptspsi.co.id/api/kasbon', {
+      const response = await fetch('https://hris-api.ptspsi.co.id/api/kasbon', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

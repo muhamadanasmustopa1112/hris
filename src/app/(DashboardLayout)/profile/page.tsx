@@ -36,8 +36,8 @@ export default function ProfilePage() {
         try {
 
           const endpoint = user.roles[0].name === 'admin' 
-          ? `https://backend-apps.ptspsi.co.id/api/company-detail/${user.company_id}`
-          : `https://backend-apps.ptspsi.co.id/api/company-user/${user.companies_users_id}`; 
+          ? `https://hris-api.ptspsi.co.id/api/company-detail/${user.company_id}`
+          : `https://hris-api.ptspsi.co.id/api/company-user/${user.companies_users_id}`; 
 
           const response = await fetch(endpoint, {
             method: 'GET',

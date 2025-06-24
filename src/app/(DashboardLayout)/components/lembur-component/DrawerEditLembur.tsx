@@ -52,7 +52,7 @@ const DrawerEditLembur: React.FC<DrawerEditLemburProps> = ({ open, onClose, onSu
     const fetchLemburData = async () => {
       if (open && lemburId) {
         try {
-          const response = await axios.get(`https://backend-apps.ptspsi.co.id/api/lembur/${lemburId}`, {
+          const response = await axios.get(`https://hris-api.ptspsi.co.id/api/lembur/${lemburId}`, {
             headers: {
               'Authorization': `Basic ${basicAuth}`
             }
@@ -77,7 +77,7 @@ const DrawerEditLembur: React.FC<DrawerEditLemburProps> = ({ open, onClose, onSu
     setLoading(true);
     setSnackbarOpen(false);
     try {
-      const response = await fetch(`https://backend-apps.ptspsi.co.id/api/lembur/${lemburId}`, {
+      const response = await fetch(`https://hris-api.ptspsi.co.id/api/lembur/${lemburId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

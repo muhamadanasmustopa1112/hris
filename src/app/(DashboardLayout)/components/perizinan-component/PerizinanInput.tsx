@@ -100,7 +100,7 @@ const PerizinanInput: React.FC = () => {
 
   const fetchJenisIzin = useCallback(async () => {
     try {
-      const response = await axios.get('https://backend-apps.ptspsi.co.id/api/jenis-izin', {
+      const response = await axios.get('https://hris-api.ptspsi.co.id/api/jenis-izin', {
         headers: {
           'Authorization': `Basic ${basicAuth}`
         }
@@ -117,7 +117,7 @@ const PerizinanInput: React.FC = () => {
 
   const fetchCategory = useCallback(async () => {
     try {
-      const response = await axios.get('https://backend-apps.ptspsi.co.id/api/category-izin', {
+      const response = await axios.get('https://hris-api.ptspsi.co.id/api/category-izin', {
         headers: {
           'Authorization': `Basic ${basicAuth}`
         }
@@ -196,7 +196,7 @@ const PerizinanInput: React.FC = () => {
 
     e.preventDefault();
     try {
-      const response = await axios.post('https://backend-apps.ptspsi.co.id/api/perizinan', formData, {
+      const response = await axios.post('https://hris-api.ptspsi.co.id/api/perizinan', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Basic ${basicAuth}`

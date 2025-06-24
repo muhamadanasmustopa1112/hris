@@ -92,7 +92,7 @@ import Cookies from 'js-cookie';
       const confirmDelete = window.confirm('Are you sure you want to delete this jabatan?');
       if (confirmDelete) {
         try {
-          const response = await fetch(`https://backend-apps.ptspsi.co.id/api/jabatan/${id}`, {
+          const response = await fetch(`https://hris-api.ptspsi.co.id/api/jabatan/${id}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',

@@ -32,7 +32,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
 
       const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
 
-      const response = await axios.post("https://backend-apps.ptspsi.co.id/api/create-company", {
+      const response = await axios.post("https://hris-api.ptspsi.co.id/api/create-company", {
         company_name: name,
         user_name: userName,
         email: email,
