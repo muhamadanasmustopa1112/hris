@@ -51,6 +51,12 @@ import {
       href: "/kasbon",
     },
     {
+      id: uniqueId(),
+      title: "Perjanalanan Dinas",
+      icon: IconFileDescription,
+      href: "/dinas",
+    },
+    {
       navlabel: true,
       subheader: "Settings",
     },
