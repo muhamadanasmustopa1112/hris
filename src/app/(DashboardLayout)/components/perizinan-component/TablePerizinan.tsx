@@ -83,7 +83,8 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
 
   const userCookie = Cookies.get('user');
   const user = userCookie ? JSON.parse(userCookie) : null;
-  const isAdmin = user?.roles[0].name === "admin";
+  const roleName = user?.roles[0]?.name;
+  const canEditAction = ['admin', 'Manager', 'HRD'].includes(roleName);
 
   const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
   const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
@@ -193,7 +194,7 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
                 <TableCell sx={{ color: '#ffffff' }}>Category Izin</TableCell>
                 <TableCell sx={{ color: '#ffffff' }}>Status</TableCell>
                 <TableCell sx={{ color: '#ffffff' }}>Lampiran</TableCell>
-                {isAdmin && (
+                {canEditAction && (
                   <TableCell sx={{ color: '#ffffff' }}>Action</TableCell>
                 )}
               </TableRow>
@@ -227,7 +228,7 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
                         <AttachFileIcon />
                     </IconButton>
                   </TableCell>
-                  {isAdmin && (
+                  {canEditAction && (
                     <TableCell>
                       <IconButton onClick={() => { handleEdit(perizinan.id)}} color="primary">
                         <EditIcon />

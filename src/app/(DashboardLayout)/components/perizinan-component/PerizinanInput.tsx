@@ -44,7 +44,8 @@ const PerizinanInput: React.FC = () => {
 
   const userCookie = Cookies.get('user');
   const user = userCookie ? JSON.parse(userCookie) : null;
-  const isAdmin = user?.roles[0].name === "admin";
+  const roleName = user?.roles[0]?.name;
+  const canEditAction = ['admin', 'Manager', 'HRD'].includes(roleName);
 
   const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
   const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
@@ -65,14 +66,14 @@ const PerizinanInput: React.FC = () => {
 
   
   useEffect(() => {
-    if (!isAdmin) {
+    if (!canEditAction) {
       setFormData((prevFormData) => ({
         ...prevFormData,
         status: 'On Prosses',
         companies_users_id: user?.companies_users_id,
       }));
     }
-  }, [isAdmin, user?.companies_users_id, basicAuth]);
+  }, [canEditAction, user?.companies_users_id, basicAuth]);
 
   
   const fetchEmployees = async () => {
@@ -288,7 +289,7 @@ const PerizinanInput: React.FC = () => {
             </FormControl>
         </Grid>
       </Grid>
-      {isAdmin && (
+      {canEditAction && (
         <FormControl variant="outlined" fullWidth required>
           <InputLabel>Employee</InputLabel>
           <Select
@@ -376,7 +377,7 @@ const PerizinanInput: React.FC = () => {
         multiline
         rows={3}
       />
-      {isAdmin && (
+      {canEditAction && (
         <FormControl  variant="outlined" fullWidth required>
           <InputLabel>Status</InputLabel>
           <Select

@@ -43,7 +43,8 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
 
   const userCookie = Cookies.get('user');
   const user = userCookie ? JSON.parse(userCookie) : null;
-  const isAdmin = user?.roles[0].name === "admin";
+  const roleName = user?.roles[0]?.name;
+  const canEditAction = ['admin', 'Manager', 'HRD'].includes(roleName);
 
   const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
   const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
@@ -130,7 +131,7 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
               <CloseIcon />
             </IconButton>
           </Box>
-          {isAdmin && (
+          {canEditAction && (
             <FormControl fullWidth margin="normal">
               <InputLabel id="select-company-user-label">Name</InputLabel>
               <Select
@@ -172,7 +173,7 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
             onChange={(e) => setDescription(e.target.value)}
             margin="normal"
           />
-          {isAdmin && (
+          {canEditAction && (
             <FormControl fullWidth margin="normal">
               <InputLabel id="select-status-label">Status</InputLabel>
               <Select

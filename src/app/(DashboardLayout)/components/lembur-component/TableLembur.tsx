@@ -86,7 +86,8 @@ import Cookies from 'js-cookie';
   
     const userCookie = Cookies.get('user');
     const user = userCookie ? JSON.parse(userCookie) : null;
-    const isAdmin = user?.roles[0].name === "admin";
+    const roleName = user?.roles[0]?.name;
+    const canEditAction = ['admin', 'Manager', 'HRD'].includes(roleName);
 
     const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
     const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
@@ -198,7 +199,7 @@ import Cookies from 'js-cookie';
                   <StyledTableCell sx={{ color: '#ffffff' }}>Jam</StyledTableCell>
                   <StyledTableCell sx={{ color: '#ffffff' }}>Keterangan</StyledTableCell>
                   <StyledTableCell sx={{ color: '#ffffff' }}>Status</StyledTableCell>
-                  {isAdmin && (
+                  {canEditAction && (
                     <StyledTableCell sx={{ color: '#ffffff' }}>Action</StyledTableCell>
                   )}
                 </TableRow>
@@ -223,7 +224,7 @@ import Cookies from 'js-cookie';
                         <Alert variant="filled" severity="info" style={{ color: 'white' }}>{lembur.status}</Alert>
                         )}
                       </StyledTableCell>    
-                      {isAdmin && (                
+                      {canEditAction && (                
                         <StyledTableCell>
                           <IconButton onClick={() => handleEdit(lembur.id)} color="primary">
                             <EditIcon />

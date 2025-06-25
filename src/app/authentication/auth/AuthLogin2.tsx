@@ -51,7 +51,7 @@ const AuthLogin2 = ({ title, subtitle, subtext }: loginType) => {
         Cookies.set("user", JSON.stringify(response.data.user), { expires: 3 / 24 });
         Cookies.set("token", response.data.token, { expires: 3 / 24 });
         
-        if (response.data.user.roles && response.data.user.roles[0].name === "employee") {
+        if (response.data.user.roles[0].name === "employee" || response.data.user.roles[0].name === "Manager" || response.data.user.roles[0].name === "Staff") {
             const redirectPath = "/lembur";
             router.push(redirectPath);
           } else {

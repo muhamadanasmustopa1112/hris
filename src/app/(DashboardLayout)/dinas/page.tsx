@@ -12,12 +12,20 @@ import TableDinas from '../components/dinas-component/TableDinas';
 interface Dinas {
     id: number;
     companies_users_id: number;
-    company_user: string;
-    tanggal: string;
-    nominal: number;
-    tenor: number;
-    keterangan: string;
+    company: {
+      id: number;
+      name: string;
+    };
+    employee: {
+      id: number;
+      name: string;
+    };
+    tanggal_berangkat: string;
+    tanggal_pulang: string;
+    tujuan: string;
+    keperluan: string;
     status: string;
+    rejected_reason: string | null;
   }
   
 
@@ -44,23 +52,20 @@ export default function DataDinasPage() {
     
     try {
       
-      const endpoint = user?.roles[0].name === "admin"
-      ? 'https://hris-api.ptspsi.co.id/api/perjalanan-dinas'
-      : `https://hris-api.ptspsi.co.id/api/perjalanan-dinas-user/${user?.companies_users_id}`;
+      const endpoint = 'https://hris-api.ptspsi.co.id/api/perjalanan-dinas';
 
       const response = await axios.get(endpoint, {
-        params: user?.roles[0].name === "admin"
-        ? { company_id: user.company_id }
-        : {},
+        params: user?.roles[0].name === "Staff"
+        ? { employee_id: user.companies_users_id}
+        : { company_id: user.company_id },
         headers: {
           'Authorization': `Basic ${basicAuth}`
         }
       });
-
       if (Array.isArray(response.data.data)) {
         setDinass(response.data.data);
       } else {
-        console.error('Expected an array, but got:', typeof response.data);
+        console.error('Expected an array, but got:', typeof response);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -92,7 +97,7 @@ export default function DataDinasPage() {
   const totalDinass = Dinass.length;
 
   return (
-    <PageContainer title="Manajemen Pengajuan Karyawan" description="Halaman untuk mengelola data pengajuan lembur karyawan">
+    <PageContainer title="Manajemen Pengajuan Karyawan" description="Halaman untuk mengelola data pengajuan Dinas karyawan">
       <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: '50px' }}>
         <Link 
           underline="hover" 

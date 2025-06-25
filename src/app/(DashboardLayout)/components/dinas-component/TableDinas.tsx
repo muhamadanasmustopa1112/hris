@@ -27,12 +27,20 @@ import Cookies from 'js-cookie';
   interface Dinas {
     id: number;
     companies_users_id: number;
-    company_user: string;
-    tanggal: string;
-    nominal: number;
-    tenor: number;
-    keterangan: string;
+    company: {
+      id: number;
+      name: string;
+    };
+    employee: {
+      id: number;
+      name: string;
+    };
+    tanggal_berangkat: string;
+    tanggal_pulang: string;
+    tujuan: string;
+    keperluan: string;
     status: string;
+    rejected_reason: string | null;
   }
   
   interface KasonResponse {
@@ -85,7 +93,8 @@ import Cookies from 'js-cookie';
 
     const userCookie = Cookies.get('user');
     const user = userCookie ? JSON.parse(userCookie) : null;
-    const isAdmin = user?.roles[0].name === "admin";
+    const roleName = user?.roles[0]?.name;
+    const canEditDinas = ['admin', 'Manager', 'HRD'].includes(roleName);
   
     const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
     const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
@@ -166,7 +175,7 @@ import Cookies from 'js-cookie';
     };
   
     const filteredDinass = Dinass.data.filter((Dinas) =>
-        Dinas.company_user.toLowerCase().includes(searchTerm.toLowerCase())
+        Dinas.employee.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
   
     const paginatedDinass = filteredDinass.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -193,12 +202,13 @@ import Cookies from 'js-cookie';
                 <TableRow>
                   <StyledTableCell sx={{ color: '#ffffff' }}>No</StyledTableCell>
                   <StyledTableCell sx={{ color: '#ffffff' }}>Name</StyledTableCell>
-                  <StyledTableCell sx={{ color: '#ffffff' }}>Tanggal</StyledTableCell>
-                  <StyledTableCell sx={{ color: '#ffffff' }}>Nominal</StyledTableCell>
-                  <StyledTableCell sx={{ color: '#ffffff' }}>Tenor (Bulan)</StyledTableCell>
-                  <StyledTableCell sx={{ color: '#ffffff' }}>Keterangan</StyledTableCell>
+                  <StyledTableCell sx={{ color: '#ffffff' }}>Tanggal Pulang</StyledTableCell>
+                  <StyledTableCell sx={{ color: '#ffffff' }}>Tanggal Berangkat</StyledTableCell>
+                  <StyledTableCell sx={{ color: '#ffffff' }}>Tujuan</StyledTableCell>
+                  <StyledTableCell sx={{ color: '#ffffff' }}>Keperluan</StyledTableCell>
+                  <StyledTableCell sx={{ color: '#ffffff' }}>Alasan</StyledTableCell>
                   <StyledTableCell sx={{ color: '#ffffff' }}>Status</StyledTableCell>
-                  {isAdmin && (
+                  {canEditDinas && (
                     <StyledTableCell sx={{ color: '#ffffff' }}>Action</StyledTableCell>
                   )}
                 </TableRow>
@@ -208,23 +218,24 @@ import Cookies from 'js-cookie';
                   paginatedDinass.map((Dinas, index) => (
                     <StyledTableRow key={Dinas.id}>
                       <StyledTableCell>{page * rowsPerPage + index + 1}</StyledTableCell>
-                      <StyledTableCell>{Dinas.company_user}</StyledTableCell>
-                      <StyledTableCell>{Dinas.tanggal}</StyledTableCell>
-                      <StyledTableCell>{Dinas.nominal}</StyledTableCell>
-                      <StyledTableCell>{Dinas.tenor}</StyledTableCell>
-                      <StyledTableCell>{Dinas.keterangan}</StyledTableCell>
+                      <StyledTableCell>{Dinas.employee.name}</StyledTableCell>
+                      <StyledTableCell>{Dinas.tanggal_berangkat}</StyledTableCell>
+                      <StyledTableCell>{Dinas.tanggal_pulang}</StyledTableCell>
+                      <StyledTableCell>{Dinas.tujuan}</StyledTableCell>
+                      <StyledTableCell>{Dinas.keperluan}</StyledTableCell>
+                      <StyledTableCell>{Dinas.rejected_reason}</StyledTableCell>
                       <StyledTableCell >
-                        {Dinas.status === 'Success' && (
-                        <Alert variant="filled" severity="success" style={{ color: 'white' }}>{Dinas.status}</Alert>
+                        {Dinas.status === 'approved' && (
+                        <Alert variant="filled" severity="success">{Dinas.status}</Alert>
                         )}
-                        {Dinas.status === 'Decline' && (
-                        <Alert variant="filled" severity="error" style={{ color: 'white' }}>{Dinas.status}</Alert>
+                        {Dinas.status === 'rejected' && (
+                        <Alert variant="filled" severity="error">{Dinas.status}</Alert>
                         )}
-                        {Dinas.status === 'On Prosses' && (
-                        <Alert variant="filled" severity="info" style={{ color: 'white' }}>{Dinas.status}</Alert>
+                        {Dinas.status === 'pending' && (
+                        <Alert variant="filled" severity="warning">{Dinas.status}</Alert>
                         )}
                       </StyledTableCell> 
-                      {isAdmin && (                   
+                      {canEditDinas && (                   
                         <StyledTableCell>
                           <IconButton onClick={() => handleEdit(Dinas.id)} color="primary">
                             <EditIcon />

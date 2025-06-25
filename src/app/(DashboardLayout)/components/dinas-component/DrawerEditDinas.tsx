@@ -16,13 +16,12 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 interface DrawerEditDinasProps {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  DinasId: number | null; 
+  DinasId: number | null;
 }
 
 interface Employee {
@@ -32,12 +31,12 @@ interface Employee {
 
 const DrawerEditDinas: React.FC<DrawerEditDinasProps> = ({ open, onClose, onSuccess, DinasId }) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [companyUser, setCompanyUser] = useState('');
-  const [tanggal, setTanggal] = useState('');
-  const [nominal, setNominal] = useState('');
-  const [tenor, setTenor] = useState('');
-  const [keterangan, setKeterangan] = useState('');
+  const [tanggal_berangkat, setTanggalBerangkat] = useState('');
+  const [tanggal_pulang, setTanggalPulang] = useState('');
+  const [tujuan, setTujuan] = useState('');
+  const [keperluan, setKeperluan] = useState('');
+  const [rejected_reason, setAlasan] = useState('');
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -46,24 +45,26 @@ const DrawerEditDinas: React.FC<DrawerEditDinasProps> = ({ open, onClose, onSucc
 
   const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
   const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
-
-  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString('base64');
 
   useEffect(() => {
     const fetchDinasData = async () => {
       if (open && DinasId) {
         try {
-          const response = await axios.get(`https://hris-api.ptspsi.co.id/api/Dinas/${DinasId}`, {
+          const response = await axios.get(`https://hris-api.ptspsi.co.id/api/perjalanan-dinas/${DinasId}`, {
             headers: {
-              'Authorization': `Basic ${basicAuth}`
-            }
+              Authorization: `Basic ${basicAuth}`,
+            },
           });
-          setCompanyUser(response.data.data.companies_user_id || ''); 
-          setTanggal(response.data.data.tanggal || '');
-          setNominal(response.data.data.nominal || '');
-          setTenor(response.data.data.tenor || '');
-          setKeterangan(response.data.data.keterangan || '');
-          setStatus(response.data.data.status || '');
+          console.log('Response data:', response.data);
+          const data = response.data;
+          setCompanyUser(data.companies_users_id?.toString() || '');
+          setTanggalBerangkat(data.tanggal_berangkat || '');
+          setTanggalPulang(data.tanggal_pulang?.toString() || '');
+          setTujuan(data.tujuan?.toString() || '');
+          setKeperluan(data.keperluan?.toString() || '');
+          setAlasan(data.rejected_reason || '');
+          setStatus(data.status || '');
         } catch (error) {
           console.error('Gagal mengambil data Dinas:', error);
           setSnackbarMessage('Gagal mengambil data Dinas.');
@@ -72,45 +73,48 @@ const DrawerEditDinas: React.FC<DrawerEditDinasProps> = ({ open, onClose, onSucc
         }
       }
     };
+
     fetchDinasData();
   }, [open, DinasId, basicAuth]);
 
   const handleSubmit = async () => {
+    if (!DinasId) return;
+
     setLoading(true);
     setSnackbarOpen(false);
-    try {
-      const response = await fetch(`https://hris-api.ptspsi.co.id/api/Dinas/${DinasId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${basicAuth}`
-        },
-        body: JSON.stringify({
-          companies_users_id: companyUser,
-          tanggal: tanggal,
-          nominal: nominal,
-          tenor: tenor,
-          keterangan: keterangan,
-          status: status,
-        }),
-      });
 
-      if (response.ok) {
-        setSnackbarMessage('Dinas berhasil diupdate!');
-        setSnackbarSeverity('success');
-        onClose();
-        setSnackbarOpen(true);
-        onSuccess();
-      } else {
-        const errorData = await response.json();
-        const message = Object.values(errorData.message).flat().join(', ') || 'Terjadi kesalahan';
-        setSnackbarMessage(message);
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
-        console.log("Snackbar opened with error message");
+    try {
+      const response = await axios.put(
+        `https://hris-api.ptspsi.co.id/api/perjalanan-dinas/${DinasId}`,
+        {
+          companies_users_id: companyUser,
+          tanggal_berangkat,
+          tanggal_pulang,
+          tujuan,
+          keperluan,
+          rejected_reason,
+          status,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${basicAuth}`,
+          },
+        }
+      );
+
+      setSnackbarMessage('Dinas berhasil diupdate!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+      onSuccess();
+      onClose();
+    } catch (error: any) {
+      let message = 'Terjadi kesalahan saat memperbarui Dinas';
+      if (error.response?.data?.message) {
+        const errorData = error.response.data.message;
+        message = Object.values(errorData).flat().join(', ');
       }
-    } catch (error) {
-      setSnackbarMessage('Terjadi kesalahan saat memperbarui Dinas');
+      setSnackbarMessage(message);
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
     } finally {
@@ -123,21 +127,15 @@ const DrawerEditDinas: React.FC<DrawerEditDinasProps> = ({ open, onClose, onSucc
       setLoading(true);
       try {
         const response = await fetch('/api/get-employee');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
         const data = await response.json();
         setEmployees(data.data);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('An unknown error occurred');
-        }
+      } catch (err) {
+        console.error('Gagal memuat data karyawan');
       } finally {
         setLoading(false);
       }
     };
+
     fetchEmployees();
   }, [basicAuth]);
 
@@ -157,55 +155,66 @@ const DrawerEditDinas: React.FC<DrawerEditDinasProps> = ({ open, onClose, onSucc
           </Box>
 
           <FormControl fullWidth margin="normal">
-            <InputLabel id="select-company-user-label">Name</InputLabel>
+            <InputLabel id="select-company-user-label">Nama Karyawan</InputLabel>
             <Select
               labelId="select-company-user-label"
               value={companyUser}
-              label="Name"
+              label="Nama Karyawan"
               onChange={(e) => setCompanyUser(e.target.value)}
             >
               {employees.map((user) => (
-                <MenuItem key={user.id} value={user.id}>
+                <MenuItem key={user.id} value={user.id.toString()}>
                   {user.name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
+
           <TextField
-            label="Tanggal"
+            label="Tanggal Berangkat"
             type="date"
             fullWidth
-            value={tanggal}
-            onChange={(e) => setTanggal(e.target.value)}
+            value={tanggal_berangkat}
+            onChange={(e) => setTanggalBerangkat(e.target.value)}
             margin="normal"
             InputLabelProps={{ shrink: true }}
           />
           <TextField
-            label="Nominal"
-            type="number"
+            label="Tanggal Pulang"
+            type="date"
             fullWidth
-            value={nominal}
-            onChange={(e) => setNominal(e.target.value)}
+            value={tanggal_pulang}
+            onChange={(e) => setTanggalPulang(e.target.value)}
             margin="normal"
-            inputProps={{ min: "0", inputMode: "numeric", pattern: "[0-9]*" }}
+            InputLabelProps={{ shrink: true }}
           />
-          <TextField
-            label="Tenor"
-            type="number"
-            fullWidth
-            value={tenor}
-            onChange={(e) => setTenor(e.target.value)}
-            margin="normal"
-            inputProps={{ min: "0", inputMode: "numeric", pattern: "[0-9]*" }}
 
-          />
           <TextField
-            label="Keterangan"
+            label="Tujuan"
+            type="text"
             fullWidth
-            value={keterangan}
-            onChange={(e) => setKeterangan(e.target.value)}
+            value={tujuan}
+            onChange={(e) => setTujuan(e.target.value)}
             margin="normal"
           />
+
+          <TextField
+            label="Keperluan"
+            type="text"
+            fullWidth
+            value={keperluan}
+            onChange={(e) => setKeperluan(e.target.value)}
+            margin="normal"
+          />
+
+          <TextField
+            label="Alasan jika ditolak"
+            fullWidth
+            value={rejected_reason}
+            onChange={(e) => setAlasan(e.target.value)}
+            margin="normal"
+          />
+
           <FormControl fullWidth margin="normal">
             <InputLabel id="select-status-label">Status</InputLabel>
             <Select
@@ -214,36 +223,32 @@ const DrawerEditDinas: React.FC<DrawerEditDinasProps> = ({ open, onClose, onSucc
               label="Status"
               onChange={(e) => setStatus(e.target.value)}
             >
-              <MenuItem value="On Prosses">On Prosses</MenuItem>
-              <MenuItem value="Success">Success</MenuItem>
-              <MenuItem value="Decline">Decline</MenuItem>
+              <MenuItem value="approved">approved</MenuItem>
+              <MenuItem value="pending">pending</MenuItem>
+              <MenuItem value="rejected">rejected</MenuItem>
             </Select>
           </FormControl>
 
           <Box mt={2} display="flex" justifyContent="flex-end">
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              disabled={loading}
-            >
+            <Button variant="contained" color="primary" onClick={handleSubmit} disabled={loading}>
               {loading ? <CircularProgress size={24} /> : 'Submit'}
             </Button>
           </Box>
         </Box>
       </Drawer>
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert 
-            onClose={handleSnackbarClose} 
-            severity={snackbarSeverity} 
-            sx={{ width: '100%', color:'white' , backgroundColor: snackbarSeverity === 'success' ? 'green' : 'red' }}
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: '100%', color: 'white', backgroundColor: snackbarSeverity === 'success' ? 'green' : 'red' }}
         >
-            {snackbarMessage}
+          {snackbarMessage}
         </Alert>
       </Snackbar>
     </>

@@ -32,11 +32,10 @@ const DrawerInputDinas: React.FC<DrawerInputDinasProps> = ({ open, onClose, onSu
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [companyUser, setCompanyUser] = useState('');
-  const [tanggal, setTanggal] = useState('');
-  const [nominal, setNominal] = useState('');
-  const [tenor, setTenor] = useState('');
-  const [keterangan, setKeterangan] = useState('');
-  const [status, setStatus] = useState('');
+  const [tanggal_berangkat, setTanggalBerangkat] = useState('');
+  const [tanggal_pulang, setTanggalPulang] = useState('');
+  const [tujuan, setTujuan] = useState('');
+  const [keperluan, setKeperluan] = useState('');
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -44,76 +43,85 @@ const DrawerInputDinas: React.FC<DrawerInputDinasProps> = ({ open, onClose, onSu
 
   const userCookie = Cookies.get('user');
   const user = userCookie ? JSON.parse(userCookie) : null;
-  const isAdmin = user?.roles[0].name === "admin";
+  const roleName = user?.roles[0]?.name;
+  const canEditAction = ['admin', 'Manager', 'HRD'].includes(roleName);
 
   const username_api = process.env.NEXT_PUBLIC_API_USERNAME;
   const password_api = process.env.NEXT_PUBLIC_API_PASSWORD;
-  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString("base64");
+  const basicAuth = Buffer.from(`${username_api}:${password_api}`).toString('base64');
+
+  const resetForm = () => {
+    setCompanyUser('');
+    setTanggalBerangkat('');
+    setTanggalPulang('');
+    setTujuan('');
+    setKeperluan('');
+  };
 
   const handleSubmit = async () => {
     setLoading(true);
     setSnackbarOpen(false);
+
     try {
-      const response = await fetch('https://hris-api.ptspsi.co.id/api/Dinas', {
+      const response = await fetch('https://hris-api.ptspsi.co.id/api/perjalanan-dinas', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Basic ${basicAuth}`
+          Authorization: `Basic ${basicAuth}`,
         },
         body: JSON.stringify({
-          companies_users_id: user?.roles[0].name === "admin" ? companyUser : user?.companies_users_id,  
-          tanggal: tanggal,
-          nominal: nominal,
-          tenor: tenor,
-          keterangan: keterangan,
-          status:  user?.roles[0].name === "admin" ? status : "On Prosses",
+          company_id: user?.company_id,
+          companies_users_id: canEditAction ? companyUser : user?.companies_users_id,
+          tanggal_berangkat,
+          tanggal_pulang,
+          tujuan,
+          keperluan,
         }),
       });
 
       if (response.ok) {
         setSnackbarMessage('Dinas berhasil ditambahkan!');
         setSnackbarSeverity('success');
-        onClose();
         setSnackbarOpen(true);
         onSuccess();
+        resetForm();
+        onClose();
       } else {
         const errorData = await response.json();
-        const message = Object.values(errorData.message).flat().join(', ') || 'Terjadi kesalahan';
+        const message =
+          Object.values(errorData.message || {}).flat().join(', ') || 'Terjadi kesalahan saat mengirim data dinas';
         setSnackbarMessage(message);
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
-
       }
     } catch (error) {
-        setSnackbarMessage('An error occurred while adding the Dinas');
-        setSnackbarSeverity('error');
+      setSnackbarMessage('Terjadi error saat mengirim data dinas');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    if (!canEditAction) return;
+
     const fetchEmployees = async () => {
       setLoading(true);
       try {
         const response = await fetch('/api/get-employee');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        if (!response.ok) throw new Error('Gagal mengambil data karyawan');
         const data = await response.json();
         setEmployees(data.data);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('An unknown error occurred');
-        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Terjadi kesalahan tidak diketahui');
       } finally {
         setLoading(false);
       }
     };
+
     fetchEmployees();
-  }, [basicAuth]);
+  }, [canEditAction]);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -129,73 +137,63 @@ const DrawerInputDinas: React.FC<DrawerInputDinasProps> = ({ open, onClose, onSu
               <CloseIcon />
             </IconButton>
           </Box>
-          {isAdmin && (
+
+          {canEditAction && (
             <FormControl fullWidth margin="normal">
-              <InputLabel id="select-company-user-label">Name</InputLabel>
+              <InputLabel id="select-company-user-label">Nama Karyawan</InputLabel>
               <Select
                 labelId="select-company-user-label"
                 value={companyUser}
-                label="Name"
+                label="Nama Karyawan"
                 onChange={(e) => setCompanyUser(e.target.value)}
               >
-                {employees.map((user) => (
-                  <MenuItem key={user.id} value={user.id}>
-                    {user.name}
+                {employees.map((emp) => (
+                  <MenuItem key={emp.id} value={emp.id}>
+                    {emp.name}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
           )}
+
           <TextField
-            label="Tanggal"
+            label="Tanggal Berangkat"
             type="date"
             fullWidth
-            value={tanggal}
-            onChange={(e) => setTanggal(e.target.value)}
+            value={tanggal_berangkat}
+            onChange={(e) => setTanggalBerangkat(e.target.value)}
             margin="normal"
             InputLabelProps={{ shrink: true }}
           />
           <TextField
-            label="Nominal"
-            type="number"
+            label="Tanggal Pulang"
+            type="date"
             fullWidth
-            value={nominal}
-            onChange={(e) => setNominal(e.target.value)}
+            value={tanggal_pulang}
+            onChange={(e) => setTanggalPulang(e.target.value)}
             margin="normal"
-            inputProps={{ min: "0", inputMode: "numeric", pattern: "[0-9]*" }}
+            InputLabelProps={{ shrink: true }}
           />
-          <TextField
-            label="Tenor"
-            type="number"
-            fullWidth
-            value={tenor}
-            onChange={(e) => setTenor(e.target.value)}
-            margin="normal"
-            inputProps={{ min: "0", inputMode: "numeric", pattern: "[0-9]*" }}
 
-          />
           <TextField
-            label="Keterangan"
+            label="Tujuan"
+            type="text"
             fullWidth
-            value={keterangan}
-            onChange={(e) => setKeterangan(e.target.value)}
+            value={tujuan}
+            onChange={(e) => setTujuan(e.target.value)}
             margin="normal"
+            inputProps={{ min: 0 }}
           />
-          {isAdmin && (
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="select-status-label">Status</InputLabel>
-              <Select
-                labelId="select-status-label"
-                value={status}
-                label="Status"
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <MenuItem value="On Prosses">On Prosses</MenuItem>
-                <MenuItem value="Success">Success</MenuItem>
-                <MenuItem value="Decline">Decline</MenuItem>
-              </Select>
-            </FormControl>
-          )}
+
+          <TextField
+            label="Keperluan"
+            type="text"
+            fullWidth
+            value={keperluan}
+            onChange={(e) => setKeperluan(e.target.value)}
+            margin="normal"
+            inputProps={{ min: 0 }}
+          />
           <Box mt={2} display="flex" justifyContent="flex-end">
             <Button
               variant="contained"
@@ -208,18 +206,23 @@ const DrawerInputDinas: React.FC<DrawerInputDinasProps> = ({ open, onClose, onSu
           </Box>
         </Box>
       </Drawer>
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert 
-            onClose={handleSnackbarClose} 
-            severity={snackbarSeverity} 
-            sx={{ width: '100%', color:'white' , backgroundColor: snackbarSeverity === 'success' ? 'green' : 'red' }}
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{
+            width: '100%',
+            color: 'white',
+            backgroundColor: snackbarSeverity === 'success' ? 'green' : 'red',
+          }}
         >
-            {snackbarMessage}
+          {snackbarMessage}
         </Alert>
       </Snackbar>
     </>
