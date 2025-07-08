@@ -23,7 +23,8 @@ interface Presensi {
   jam_keluar: string;
   keterangan_masuk: string;
   keterangan_keluar: string;
-  alamat: string;
+  alamat_masuk: string;
+  alamat_keluar: string;
   
 }
 export default function DataPresensiPage() {

@@ -18,10 +18,8 @@ import {
 import { SyntheticEvent, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useRouter } from 'next/navigation';
 import DrawerInputPresensi from './DrawerInputPresensi';
 import * as XLSX from 'xlsx';
-import Cookies from 'js-cookie';
 
 interface Presensi {
   id: number;
@@ -36,7 +34,8 @@ interface Presensi {
   jam_keluar: string;
   keterangan_masuk: string;
   keterangan_keluar: string;
-  alamat: string;
+  alamat_masuk: string;
+  alamat_keluar: string;
 }
 
 interface PresensiResponse {
@@ -238,7 +237,7 @@ const TablePresensi: React.FC<TablePresensiProps> = ({
                     <TableCell>{presensi.status_keluar}</TableCell>
                     <TableCell>{presensi.keterangan_masuk ? presensi.keterangan_masuk : '-'}</TableCell>
                     <TableCell>{presensi.keterangan_keluar ? presensi.keterangan_keluar : '-'}</TableCell>
-                    <TableCell>{presensi.alamat}</TableCell>
+                    <TableCell>{presensi.alamat_masuk}</TableCell>
                     <TableCell>
                       <IconButton
                         onClick={() => deletePresensi(presensi.presensi_keluar_id, presensi.id)}
