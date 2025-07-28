@@ -4,14 +4,14 @@ import {
 } from 'recharts';
 
 interface ChartData {
-  name: string;      // Change the type if necessary
-  onProses: number;  // Assuming it's a number
-  success: number;   // Assuming it's a number
-  decline: number;   // Assuming it's a number
+  name: string;      
+  onProses: number;  
+  success: number;   
+  decline: number;   
 }
 
 interface BarChartsDashboardProps {
-  data: ChartData[]; // Array of ChartData
+  data: ChartData[]; 
 }
 
 const BarChartsDashboard: React.FC<BarChartsDashboardProps> = ({ data }) => {
@@ -22,9 +22,9 @@ const BarChartsDashboard: React.FC<BarChartsDashboardProps> = ({ data }) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="onProses" fill="#3498db" name="On Proses" />
-        <Bar dataKey="success" fill="#52be80" name="Success" />
-        <Bar dataKey="decline" fill="#e74c3c" name="Decline" />
+        <Bar dataKey="onProses" fill="#3498db" name="pending" />
+        <Bar dataKey="success" fill="#52be80" name="approved" />
+        <Bar dataKey="decline" fill="#e74c3c" name="rejected" />
       </BarChart>
     </ResponsiveContainer>
   );

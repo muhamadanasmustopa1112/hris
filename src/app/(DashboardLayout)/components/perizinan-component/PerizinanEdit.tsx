@@ -416,9 +416,9 @@ const PerizinanEdit: React.FC = () => {
           label="Employee"
         >
           <MenuItem value=""><em>Select Status</em></MenuItem>
-          <MenuItem value="Success">Success</MenuItem>
-          <MenuItem value="Decline">Decline</MenuItem>
-          <MenuItem value="On Prosses">On Prosses</MenuItem>
+          <MenuItem value="approved">approved</MenuItem>
+          <MenuItem value="rejected">rejected</MenuItem>
+          <MenuItem value="pending">pending</MenuItem>
         </Select>
       </FormControl>
       <div {...getRootProps()} style={{

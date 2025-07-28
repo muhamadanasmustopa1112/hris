@@ -213,13 +213,13 @@ const TablePerizinan: React.FC<TablePerizinanProops> = ({
                   <TableCell>{perizinan.jenis_perizinan_name}</TableCell>
                   <TableCell>{perizinan.category_name}</TableCell>
                   <TableCell >
-                    {perizinan.status === 'Success' && (
+                    {perizinan.status === 'approved' && (
                     <Alert variant="filled" severity="success" style={{ color: 'white' }}>{perizinan.status}</Alert>
                     )}
-                    {perizinan.status === 'Decline' && (
+                    {perizinan.status === 'rejected' && (
                     <Alert variant="filled" severity="error" style={{ color: 'white' }}>{perizinan.status}</Alert>
                     )}
-                    {perizinan.status === 'On Prosses' && (
+                    {perizinan.status === 'pending' && (
                     <Alert variant="filled" severity="info" style={{ color: 'white' }}>{perizinan.status}</Alert>
                     )}
                   </TableCell>

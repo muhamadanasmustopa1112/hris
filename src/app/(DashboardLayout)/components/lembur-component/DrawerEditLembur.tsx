@@ -210,9 +210,9 @@ const DrawerEditLembur: React.FC<DrawerEditLemburProps> = ({ open, onClose, onSu
               label="Status"
               onChange={(e) => setStatus(e.target.value)}
             >
-              <MenuItem value="On Prosses">On Prosses</MenuItem>
-              <MenuItem value="Success">Success</MenuItem>
-              <MenuItem value="Decline">Decline</MenuItem>
+              <MenuItem value="pending">pending</MenuItem>
+              <MenuItem value="approved">approved</MenuItem>
+              <MenuItem value="rejected">rejected</MenuItem>
             </Select>
           </FormControl>
 

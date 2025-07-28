@@ -8,9 +8,9 @@ export default function PieChartKasbon() {
     series={[
         {
             data: [
-                { id: 0, value: 10, label: 'Decline'}, 
-                { id: 1, value: 15, label: 'On Prosses'},    
-                { id: 2, value: 20, label: 'Success'}, 
+                { id: 0, value: 10, label: 'rejected'}, 
+                { id: 1, value: 15, label: 'pending'},    
+                { id: 2, value: 20, label: 'approved'}, 
             ],
         },
     ]}

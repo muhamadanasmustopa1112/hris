@@ -215,13 +215,13 @@ import Cookies from 'js-cookie';
                       <StyledTableCell>{kasbon.tenor}</StyledTableCell>
                       <StyledTableCell>{kasbon.keterangan}</StyledTableCell>
                       <StyledTableCell >
-                        {kasbon.status === 'Success' && (
+                        {kasbon.status === 'approved' && (
                         <Alert variant="filled" severity="success" style={{ color: 'white' }}>{kasbon.status}</Alert>
                         )}
-                        {kasbon.status === 'Decline' && (
+                        {kasbon.status === 'rejected' && (
                         <Alert variant="filled" severity="error" style={{ color: 'white' }}>{kasbon.status}</Alert>
                         )}
-                        {kasbon.status === 'On Prosses' && (
+                        {kasbon.status === 'pending' && (
                         <Alert variant="filled" severity="info" style={{ color: 'white' }}>{kasbon.status}</Alert>
                         )}
                       </StyledTableCell> 

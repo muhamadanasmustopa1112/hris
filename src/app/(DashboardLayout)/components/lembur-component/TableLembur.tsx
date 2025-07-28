@@ -214,13 +214,13 @@ import Cookies from 'js-cookie';
                       <StyledTableCell>{lembur.jam}</StyledTableCell>
                       <StyledTableCell>{lembur.description}</StyledTableCell>
                       <StyledTableCell >
-                        {lembur.status === 'Success' && (
+                        {lembur.status === 'approved' && (
                         <Alert variant="filled" severity="success" style={{ color: 'white' }}>{lembur.status}</Alert>
                         )}
-                        {lembur.status === 'Decline' && (
+                        {lembur.status === 'rejected' && (
                         <Alert variant="filled" severity="error" style={{ color: 'white' }}>{lembur.status}</Alert>
                         )}
-                        {lembur.status === 'On Prosses' && (
+                        {lembur.status === 'pending' && (
                         <Alert variant="filled" severity="info" style={{ color: 'white' }}>{lembur.status}</Alert>
                         )}
                       </StyledTableCell>    

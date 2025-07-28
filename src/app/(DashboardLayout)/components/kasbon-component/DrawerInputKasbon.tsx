@@ -67,7 +67,7 @@ const DrawerInputKasbon: React.FC<DrawerInputKasbonProps> = ({ open, onClose, on
           nominal: nominal,
           tenor: tenor,
           keterangan: keterangan,
-          status:  user?.roles[0].name === "admin" ? status : "On Prosses",
+          status:  user?.roles[0].name === "admin" ? status : "pending",
         }),
       });
 
@@ -191,9 +191,9 @@ const DrawerInputKasbon: React.FC<DrawerInputKasbonProps> = ({ open, onClose, on
                 label="Status"
                 onChange={(e) => setStatus(e.target.value)}
               >
-                <MenuItem value="On Prosses">On Prosses</MenuItem>
-                <MenuItem value="Success">Success</MenuItem>
-                <MenuItem value="Decline">Decline</MenuItem>
+                <MenuItem value="pending">pending</MenuItem>
+                <MenuItem value="approved">approved</MenuItem>
+                <MenuItem value="Decline">rejected</MenuItem>
               </Select>
             </FormControl>
           )}

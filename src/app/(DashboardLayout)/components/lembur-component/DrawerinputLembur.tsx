@@ -65,7 +65,7 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
           tanggal: tanggal,
           jam: jam,
           description: description,
-          status:  user?.roles[0].name === "admin" ? status : "On Prosses",
+          status:  user?.roles[0].name === "admin" ? status : "pending",
         }),
       });
 
@@ -182,9 +182,9 @@ const DrawerInputLembur: React.FC<DrawerInputLemburProps> = ({ open, onClose, on
                 label="Status"
                 onChange={(e) => setStatus(e.target.value)}
               >
-                <MenuItem value="On Prosses">On Prosses</MenuItem>
-                <MenuItem value="Success">Success</MenuItem>
-                <MenuItem value="Decline">Decline</MenuItem>
+                <MenuItem value="pending">pending</MenuItem>
+                <MenuItem value="approved">approved</MenuItem>
+                <MenuItem value="rejected">rejected</MenuItem>
               </Select>
             </FormControl>
           )}
